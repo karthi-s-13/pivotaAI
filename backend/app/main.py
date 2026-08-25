@@ -47,6 +47,13 @@ async def lifespan(app: FastAPI):
                 col_names = [c[0] for c in cols]
                 if "provider_metadata" not in col_names:
                     conn.execute(text(f"ALTER TABLE {tbl} ADD COLUMN provider_metadata JSONB;"))
+
+            # 3. Migrate users table for 2FA
+            cols = conn.execute(text("SELECT column_name FROM information_schema.columns WHERE table_name='users';")).fetchall()
+            col_names = [c[0] for c in cols]
+            if "is_2fa_verified" not in col_names:
+                conn.execute(text("ALTER TABLE users ADD COLUMN is_2fa_verified BOOLEAN DEFAULT FALSE NOT NULL;"))
+
             conn.commit()
             print("Database schemas auto-migrated successfully")
     except Exception as emigrate:

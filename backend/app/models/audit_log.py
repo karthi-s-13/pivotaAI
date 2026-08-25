@@ -26,7 +26,7 @@ class AuditLog(Base):
     ip_address = Column(String(45), nullable=True)
 
     # User & Organization
-    user_id = Column(String(36), ForeignKey("users.id"), nullable=True, index=True)
+    user_id = Column(String(36), nullable=True, index=True)
     organization_id = Column(
         String(36), ForeignKey("organizations.id"), nullable=False, index=True
     )
@@ -39,5 +39,4 @@ class AuditLog(Base):
     )
 
     # Relationships
-    user = relationship("User", back_populates="audit_logs")
     organization = relationship("Organization", back_populates="audit_logs")

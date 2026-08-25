@@ -37,3 +37,5 @@ class Organization(Base):
     users = relationship("User", back_populates="organization", cascade="all, delete-orphan")
     data_sources = relationship("DataSource", back_populates="organization", cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog", back_populates="organization", cascade="all, delete-orphan")
+    iam_users = relationship("IAMUser", back_populates="organization", cascade="all, delete-orphan")
+    iam_policies = relationship("IAMPolicy", back_populates="organization", cascade="all, delete-orphan")

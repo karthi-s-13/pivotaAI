@@ -23,6 +23,7 @@ class User(Base):
     full_name = Column(String(255), nullable=False)
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
+    is_2fa_verified = Column(Boolean, default=False, nullable=False)
     role = Column(String(50), default="admin", nullable=False)  # admin, manager, analyst, viewer
 
     # Organization
@@ -44,5 +45,3 @@ class User(Base):
 
     # Relationships
     organization = relationship("Organization", back_populates="users")
-    data_sources = relationship("DataSource", back_populates="created_by_user")
-    audit_logs = relationship("AuditLog", back_populates="user")

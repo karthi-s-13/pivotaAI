@@ -20,6 +20,7 @@ from app.schemas.data_source import (
     DataSourceUpdate,
 )
 from app.services import audit_service, data_source_service
+from app.core.authorization import check_permission
 
 router = APIRouter(prefix="/data-sources", tags=["Data Sources"])
 
@@ -30,6 +31,7 @@ def list_data_sources(
     db: Session = Depends(get_db),
 ):
     """List all registered data sources for the user's organization."""
+    check_permission(user, "view_catalog", db)
     return data_source_service.list_data_sources(db, user.organization_id)
 
 
@@ -40,6 +42,7 @@ def create_data_source(
     db: Session = Depends(get_db),
 ):
     """Register a new data source."""
+    check_permission(user, "create_connections", db)
     result = data_source_service.create_data_source(db, request, user)
 
     # Log audit event
@@ -63,6 +66,7 @@ def get_data_source(
     db: Session = Depends(get_db),
 ):
     """Get details of a registered data source by ID."""
+    check_permission(user, "view_catalog", db)
     return data_source_service.get_data_source(db, source_id, user.organization_id)
 
 
@@ -74,6 +78,7 @@ def update_data_source(
     db: Session = Depends(get_db),
 ):
     """Update a registered data source configuration."""
+    check_permission(user, "create_connections", db)
     result = data_source_service.update_data_source(
         db, source_id, request, user.organization_id
     )
@@ -99,6 +104,7 @@ def delete_data_source(
     db: Session = Depends(get_db),
 ):
     """Delete a data source (soft delete)."""
+    check_permission(user, "delete_data_sources", db)
     data_source_service.delete_data_source(db, source_id, user.organization_id)
 
     # Log audit event
@@ -119,6 +125,7 @@ def test_source_connection(
     db: Session = Depends(get_db),
 ):
     """Test connection for an existing registered data source."""
+    check_permission(user, "create_connections", db)
     result = data_source_service.test_connection_for_source(
         db, source_id, user.organization_id
     )
@@ -141,8 +148,10 @@ def test_source_connection(
 def test_connection(
     request: ConnectionTestRequest,
     user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """Test a connection configuration without registering it."""
+    check_permission(user, "create_connections", db)
     return data_source_service.test_connection_unsaved(request)
 
 
@@ -154,6 +163,7 @@ def discover_metadata(
     db: Session = Depends(get_db),
 ):
     """Manually trigger metadata auto-discovery in the background for a registered data source."""
+    check_permission(user, "create_connections", db)
     # Get direct DB record to modify
     from app.models.data_source import DataSource
     db_ds = db.query(DataSource).filter(DataSource.id == source_id, DataSource.organization_id == user.organization_id).first()
@@ -188,6 +198,7 @@ def connect_datasource(
     db: Session = Depends(get_db),
 ):
     """Explicitly establish active connection status for a data source."""
+    check_permission(user, "create_connections", db)
     result = data_source_service.connect_source(db, source_id, user.organization_id)
 
     # Log audit event
@@ -210,6 +221,7 @@ def disconnect_datasource(
     db: Session = Depends(get_db),
 ):
     """Explicitly disconnect a data source."""
+    check_permission(user, "create_connections", db)
     result = data_source_service.disconnect_source(db, source_id, user.organization_id)
 
     # Log audit event

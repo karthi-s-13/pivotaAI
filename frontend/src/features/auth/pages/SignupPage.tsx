@@ -67,7 +67,7 @@ export default function SignupPage() {
         organization_name: form.organization_name,
       });
       setAuth(response.user, response.access_token, response.refresh_token);
-      navigate('/dashboard');
+      navigate('/verify-2fa');
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Registration failed. Please try again.';
       setError(msg);

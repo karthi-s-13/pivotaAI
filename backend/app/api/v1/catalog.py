@@ -11,6 +11,7 @@ from sqlalchemy import or_
 
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
+from app.core.authorization import check_permission
 from app.models.user import User
 from app.models.data_source import DataSource
 from app.models.metadata import (
@@ -39,10 +40,11 @@ router = APIRouter(prefix="/catalog", tags=["Catalog Browser"])
 
 @router.get("/databases", response_model=List[DatabaseResponse])
 def get_databases(
-    user: User = Depends(get_current_active_user),
+    user = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Retrieve all non-template databases registered under the user's organization."""
+    check_permission(user, "view_catalog", db)
     results = (
         db.query(DatabaseMetadata, DataSource.name.label("data_source_name"))
         .join(DataSource, DatabaseMetadata.data_source_id == DataSource.id)
@@ -72,10 +74,11 @@ def get_databases(
 @router.get("/schemas", response_model=List[SchemaResponse])
 def get_schemas(
     database_id: Optional[str] = None,
-    user: User = Depends(get_current_active_user),
+    user = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Retrieve schemas, optionally filtered by database ID."""
+    check_permission(user, "view_catalog", db)
     query_obj = (
         db.query(SchemaMetadata, DatabaseMetadata.name.label("database_name"))
         .join(DatabaseMetadata, SchemaMetadata.database_id == DatabaseMetadata.id)
@@ -109,10 +112,11 @@ def get_schemas(
 def get_objects(
     database_id: Optional[str] = None,
     schema_id: Optional[str] = None,
-    user: User = Depends(get_current_active_user),
+    user = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Retrieve table/view summary lists, optionally filtered by schema or database."""
+    check_permission(user, "view_catalog", db)
     query_obj = (
         db.query(
             ObjectMetadata,
@@ -157,10 +161,11 @@ def get_objects(
 @router.get("/objects/{object_id}", response_model=ObjectDetailResponse)
 def get_object_details(
     object_id: str,
-    user: User = Depends(get_current_active_user),
+    user = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Retrieve deep table/view details including columns, indexes, and FKs."""
+    check_permission(user, "view_tables", db)
     obj_data = (
         db.query(
             ObjectMetadata,
@@ -267,10 +272,11 @@ def get_object_details(
 
 @router.get("/relationships", response_model=List[RelationshipResponse])
 def get_all_relationships(
-    user: User = Depends(get_current_active_user),
+    user = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Retrieve all foreign key mappings across the organization for ER maps."""
+    check_permission(user, "view_data_map", db)
     # Build alias maps for join logic
     from sqlalchemy.orm import aliased
     FromObj = aliased(ObjectMetadata)
@@ -310,10 +316,11 @@ def get_all_relationships(
 @router.get("/search", response_model=SearchResponse)
 def search_catalog(
     q: str = Query(..., min_length=1),
-    user: User = Depends(get_current_active_user),
+    user = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Execute organization-wide metadata fuzzy search across databases, tables, and columns."""
+    check_permission(user, "view_catalog", db)
     search_pattern = f"%{q}%"
     results: List[SearchMatchItem] = []
 
@@ -495,10 +502,11 @@ def get_object_records(
     object_id: str,
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    user: User = Depends(get_current_active_user),
+    user = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Retrieve actual data rows for a given table/view, falling back to mock data if connection fails."""
+    check_permission(user, "run_select_queries", db)
     # 1. Fetch ObjectMetadata to know the table name and schema
     obj = (
         db.query(

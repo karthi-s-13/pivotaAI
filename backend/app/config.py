@@ -51,11 +51,21 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # 2FA / TOTP (shared secret with Auth Pivota service)
+    TOTP_SECRET_KEY: str = "pivota-totp-shared-secret-key-2024"
+    AUTH_SERVICE_URL: str = "http://localhost:8001"
+
     # Credential Encryption
     ENCRYPTION_KEY: str = ""
 
+    # Gmail SMTP for sending IAM invitation emails
+    SMTP_EMAIL: str = ""
+    SMTP_APP_PASSWORD: str = ""
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+
     # CORS
-    CORS_ORIGINS: str = '["http://localhost:5173","http://localhost:3000"]'
+    CORS_ORIGINS: str = '["http://localhost:5173","http://localhost:3000","http://localhost:3001"]'
 
     @property
     def cors_origins_list(self) -> List[str]:

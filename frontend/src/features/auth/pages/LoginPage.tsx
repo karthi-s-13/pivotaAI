@@ -33,7 +33,13 @@ export default function LoginPage() {
     try {
       const response = await authApi.login({ email, password });
       setAuth(response.user, response.access_token, response.refresh_token);
-      navigate('/dashboard');
+
+      // Redirect based on 2FA status
+      if (response.user.is_2fa_verified) {
+        navigate('/dashboard');
+      } else {
+        navigate('/verify-2fa');
+      }
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Invalid credentials. Please try again.';
       setError(msg);
@@ -190,6 +196,21 @@ export default function LoginPage() {
             }}
           >
             Create one
+          </Link>
+        </p>
+
+        {/* IAM Login Link */}
+        <p style={{ textAlign: 'center', marginTop: 12, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          Are you an employee?{' '}
+          <Link
+            to="/iam/login"
+            style={{
+              color: '#000000',
+              textDecoration: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Employee IAM Login
           </Link>
         </p>
       </div>

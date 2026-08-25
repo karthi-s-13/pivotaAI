@@ -9,6 +9,8 @@ from app.models.user import User
 from app.models.data_source import DataSource
 from app.models.audit_log import AuditLog
 from app.models.secret import Secret
+from app.models.iam_policy import IAMPolicy
+from app.models.iam_user import IAMUser
 from app.models.metadata import (
     MetadataSnapshot,
     DatabaseMetadata,
@@ -25,6 +27,8 @@ __all__ = [
     "DataSource",
     "AuditLog",
     "Secret",
+    "IAMPolicy",
+    "IAMUser",
     "MetadataSnapshot",
     "DatabaseMetadata",
     "SchemaMetadata",

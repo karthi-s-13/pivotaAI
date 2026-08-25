@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Compass,
 } from 'lucide-react';
+import { useAuthStore } from '../../stores/authStore';
 
 interface NavItem {
   path: string;
@@ -64,6 +65,21 @@ interface SidebarProps {
 
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
+  const { user } = useAuthStore();
+
+  const hasPermission = (path: string) => {
+    if (!user) return false;
+    if (!user.is_iam) return true; // Admins bypass all checks
+
+    const perms = user.permissions || {};
+    if (path === '/data-map') return !!perms.view_data_map;
+    if (path === '/catalog') return !!perms.view_catalog;
+    if (path === '/search') return !!perms.view_catalog;
+    if (path === '/ask-pivota-ai') return !!perms.run_select_queries;
+    if (path === '/data-sources') return !!perms.create_connections || !!perms.delete_data_sources;
+
+    return true;
+  };
 
   return (
     <aside
@@ -142,7 +158,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 {sectionLabels[section]}
               </p>
             )}
-            {navItems.filter(n => n.section === section).map(renderNavItem)}
+            {navItems.filter(n => n.section === section && hasPermission(n.path)).map(renderNavItem)}
           </div>
         ))}
       </nav>

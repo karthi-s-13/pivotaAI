@@ -3,12 +3,15 @@ venv/
 .venv/
 node_modules/
 frontend/node_modules/
+auth-frontend/node_modules/
 
 # Secrets and environment configurations
 .env
 .env.*
 backend/.env
 frontend/.env
+auth-service/.env
+auth-frontend/.env
 
 # Local logs and build outputs
 *.log

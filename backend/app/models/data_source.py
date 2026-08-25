@@ -60,7 +60,7 @@ class DataSource(Base):
         String(36), ForeignKey("organizations.id"), nullable=False, index=True
     )
     created_by = Column(
-        String(36), ForeignKey("users.id"), nullable=False
+        String(36), nullable=False
     )
 
     created_at = Column(
@@ -77,7 +77,6 @@ class DataSource(Base):
 
     # Relationships
     organization = relationship("Organization", back_populates="data_sources")
-    created_by_user = relationship("User", back_populates="data_sources")
 
     # Compatibility Properties/Getters/Setters
     @property

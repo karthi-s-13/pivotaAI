@@ -1,11 +1,11 @@
 /**
  * Pivota App Entry Point.
  *
- * Sets up routing, auth protection, and query client.
+ * Sets up routing, auth protection, 2FA verification, and query client.
  */
 
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from './stores/authStore';
@@ -17,6 +17,9 @@ import AppShell from './components/layout/AppShell';
 // Pages
 import LoginPage from './features/auth/pages/LoginPage';
 import SignupPage from './features/auth/pages/SignupPage';
+import Verify2FAPage from './features/auth/pages/Verify2FAPage';
+import IAMLoginPage from './features/auth/pages/IAMLoginPage';
+import IAMChangePasswordPage from './features/auth/pages/IAMChangePasswordPage';
 import DashboardPage from './features/dashboard/pages/DashboardPage';
 import DataSourcesPage from './features/data-sources/pages/DataSourcesPage';
 import DataMapPage from './features/data-map/pages/DataMapPage';
@@ -40,10 +43,12 @@ const queryClient = new QueryClient({
 
 /**
  * Protected Route Wrapper
- * Checks if user is authenticated. If not, redirects to /login.
+ * Checks if user is authenticated and 2FA verified.
+ * If not authenticated → /login
+ * If authenticated but not 2FA verified → /verify-2fa
  */
 function ProtectedRoute() {
-  const { isAuthenticated, isLoading, setAuth, setLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, user, setAuth, setLoading } = useAuthStore();
   const [verifying, setVerifying] = useState(true);
 
   useEffect(() => {
@@ -81,6 +86,11 @@ function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
+  // Check 2FA verification
+  if (user && !user.is_2fa_verified) {
+    return <Navigate to="/verify-2fa" replace />;
+  }
+
   return <Outlet />;
 }
 
@@ -92,6 +102,9 @@ export default function App() {
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/verify-2fa" element={<Verify2FAPage />} />
+          <Route path="/iam/login" element={<IAMLoginPage />} />
+          <Route path="/iam/change-password" element={<IAMChangePasswordPage />} />
 
           {/* Protected Routes inside App Shell */}
           <Route element={<ProtectedRoute />}>
