@@ -1,0 +1,62 @@
+{
+  "postgresql": {
+    "sql": true,
+    "schemas": true,
+    "transactions": true,
+    "relationships": "full"
+  },
+  "supabase": {
+    "sql": true,
+    "schemas": true,
+    "transactions": true,
+    "relationships": "full",
+    "functions": true,
+    "triggers": true,
+    "extensions": true,
+    "rls": true,
+    "managed_cloud": true,
+    "connection_pooler": true,
+    "vector_extension_detection": true,
+    "schema_inference": false
+  },
+  "mysql": {
+    "sql": true,
+    "schemas": false,
+    "transactions": true,
+    "relationships": "full"
+  },
+  "sqlserver": {
+    "sql": true,
+    "schemas": true,
+    "transactions": true,
+    "relationships": "full",
+    "databases": true,
+    "tables": true,
+    "views": true,
+    "columns": true,
+    "indexes": true,
+    "primary_keys": true,
+    "foreign_keys": true,
+    "constraints": true,
+    "stored_procedures": true,
+    "functions": true,
+    "triggers": true,
+    "sequences": true,
+    "synonyms": true
+  },
+  "mongodb": {
+    "sql": false,
+    "schemas": false,
+    "collections": true,
+    "databases": true,
+    "indexes": true,
+    "schema_inference": true,
+    "nested_documents": true,
+    "arrays": true,
+    "transactions": false,
+    "relationships": "inferred",
+    "views": true,
+    "fixed_schema": false,
+    "category": "nosql"
+  }
+}

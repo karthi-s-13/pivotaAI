@@ -1,0 +1,13 @@
+/* App-wide custom overrides */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-app);
+}
+
+.main-content {
+  flex: 1;
+  padding: 32px;
+  background: var(--bg-app);
+  color: var(--text-primary);
+}

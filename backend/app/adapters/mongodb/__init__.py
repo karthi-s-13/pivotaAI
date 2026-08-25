@@ -1,0 +1,3 @@
+"""
+MongoDB Adapter package.
+"""
