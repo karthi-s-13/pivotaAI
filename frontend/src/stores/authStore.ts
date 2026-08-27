@@ -5,7 +5,7 @@
  */
 
 import { create } from 'zustand';
-import type { UserResponse } from '../features/auth/api/authApi';
+import { authApi, type UserResponse } from '../features/auth/api/authApi';
 
 interface AuthState {
   user: UserResponse | null;
@@ -14,7 +14,7 @@ interface AuthState {
 
   // Actions
   setAuth: (user: UserResponse, accessToken: string, refreshToken: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   setLoading: (loading: boolean) => void;
   checkAuth: () => boolean;
 }
@@ -30,10 +30,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user, isAuthenticated: true, isLoading: false });
   },
 
-  logout: () => {
-    localStorage.removeItem('pivota_access_token');
-    localStorage.removeItem('pivota_refresh_token');
-    set({ user: null, isAuthenticated: false, isLoading: false });
+  logout: async () => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error('Logout failed on backend:', error);
+    } finally {
+      localStorage.removeItem('pivota_access_token');
+      localStorage.removeItem('pivota_refresh_token');
+      set({ user: null, isAuthenticated: false, isLoading: false });
+    }
   },
 
   setLoading: (loading) => set({ isLoading: loading }),

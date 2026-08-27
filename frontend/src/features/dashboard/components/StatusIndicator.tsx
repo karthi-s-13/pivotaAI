@@ -24,9 +24,9 @@ const STATUS_CONFIG: Record<string, { color: string; label: string; bg: string }
   network_error:{ color: 'var(--status-error)', label: 'Network Error', bg: 'var(--status-error-bg)' },
   permission_denied:{ color: 'var(--status-error)', label: 'Permission Denied', bg: 'var(--status-error-bg)' },
   down:       { color: 'var(--status-error)',   label: 'Down',       bg: 'var(--status-error-bg)' },
-  syncing:    { color: 'var(--brand-primary)',  label: 'Syncing',    bg: 'rgba(99, 102, 241, 0.12)' },
-  disconnected:{ color: 'var(--text-disabled)', label: 'Disconnected', bg: 'rgba(148, 163, 184, 0.08)' },
-  unknown:    { color: 'var(--text-disabled)',  label: 'Unknown',    bg: 'rgba(148, 163, 184, 0.08)' },
+  syncing:    { color: 'var(--status-info)',    label: 'Syncing',    bg: 'var(--status-info-bg)' },
+  disconnected:{ color: 'var(--text-disabled)', label: 'Disconnected', bg: 'var(--bg-elevated)' },
+  unknown:    { color: 'var(--text-disabled)',  label: 'Unknown',    bg: 'var(--bg-elevated)' },
 };
 
 export default function StatusIndicator({ status, showLabel = true, size = 'md' }: StatusIndicatorProps) {

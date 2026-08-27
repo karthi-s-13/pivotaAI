@@ -1,6 +1,7 @@
 /**
  * Schema Node — Represents a database schema.
- * Visually de-emphasized as an intermediary node.
+ * Visually de-emphasized as an intermediary node via a lighter,
+ * dashed border and smaller footprint — never via color.
  */
 
 import React from 'react';
@@ -39,7 +40,7 @@ export const SchemaNode = React.memo(function SchemaNode({
   const py = y - H / 2;
 
   const isLoading = status === 'loading';
-  const opacity = highlighted ? 1 : 0.85;
+  const opacity = highlighted ? 1 : 0.9;
 
   return (
     <g
@@ -49,32 +50,32 @@ export const SchemaNode = React.memo(function SchemaNode({
       onDoubleClick={onDoubleClick}
       onContextMenu={onContextMenu}
     >
-      {/* Background */}
+      {/* Background — light, dashed border to read as an intermediary node */}
       <rect
         width={W}
         height={H}
         rx={8}
-        fill="#0f1929"
-        stroke={selected ? '#6366f1' : 'rgba(148,163,184,0.08)'}
+        fill="#ffffff"
+        stroke={selected ? '#000000' : '#c4c9d1'}
         strokeWidth={selected ? 1.8 : 1}
         strokeDasharray={selected ? '0' : '4 3'}
         style={{ transition: 'stroke 0.2s' }}
       />
 
-      {/* Icon: folder/schema symbol */}
+      {/* Icon: folder/schema symbol (monochrome) */}
       <g transform="translate(10, 12)" style={{ pointerEvents: 'none' }}>
-        <rect width={18} height={13} rx={2} fill="rgba(139,92,246,0.2)" stroke="rgba(139,92,246,0.35)" strokeWidth={1} />
-        <rect x={3} y={-3} width={10} height={5} rx={1.5} fill="rgba(139,92,246,0.3)" stroke="rgba(139,92,246,0.35)" strokeWidth={1} />
+        <rect width={18} height={13} rx={2} fill="#f3f4f6" stroke="#9ca3af" strokeWidth={1} />
+        <rect x={3} y={-3} width={10} height={5} rx={1.5} fill="#e5e7eb" stroke="#9ca3af" strokeWidth={1} />
       </g>
 
       {/* Label */}
       <text
         x={36}
         y={22}
-        fill="#c4b5fd"
+        fill="#374151"
         fontSize="10.5"
         fontWeight="600"
-        fontFamily="Inter, sans-serif"
+        fontFamily="'Open Sans', sans-serif"
         style={{ pointerEvents: 'none' }}
       >
         {label.length > 12 ? label.slice(0, 11) + '…' : label}
@@ -84,9 +85,9 @@ export const SchemaNode = React.memo(function SchemaNode({
       <text
         x={36}
         y={36}
-        fill="rgba(148,163,184,0.5)"
+        fill="#9ca3af"
         fontSize="7.5"
-        fontFamily="Inter, sans-serif"
+        fontFamily="'Open Sans', sans-serif"
         style={{ pointerEvents: 'none' }}
       >
         {isLoading ? 'Loading…' : 'Schema'}
@@ -103,9 +104,9 @@ export const SchemaNode = React.memo(function SchemaNode({
       >
         <rect x={-4} y={-4} width={20} height={20} fill="transparent" />
         {expanded ? (
-          <path d="M2,11 L6,5 L10,11" fill="none" stroke="rgba(148,163,184,0.55)" strokeWidth="1.3" />
+          <path d="M2,11 L6,5 L10,11" fill="none" stroke="#9ca3af" strokeWidth="1.3" />
         ) : (
-          <path d="M2,5 L6,11 L10,5" fill="none" stroke="rgba(148,163,184,0.55)" strokeWidth="1.3" />
+          <path d="M2,5 L6,11 L10,5" fill="none" stroke="#9ca3af" strokeWidth="1.3" />
         )}
       </g>
     </g>

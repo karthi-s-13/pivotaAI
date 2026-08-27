@@ -147,6 +147,32 @@ def get_me(
     return auth_service.serialize_user_response(db, user)
 
 
+@router.post("/logout", response_model=MessageResponse)
+def logout(
+    user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Log out the user.
+    If the user is an admin, reset their 2FA verification status.
+    """
+    if not getattr(user, "iam_id", None) and user.role == "admin":
+        user.is_2fa_verified = False
+        db.commit()
+
+    # Log audit event
+    audit_service.log_event(
+        db=db,
+        action="LOGOUT",
+        organization_id=user.organization_id,
+        user_id=user.id,
+        resource_type="user",
+        resource_id=user.id,
+    )
+
+    return MessageResponse(message="Successfully logged out")
+
+
 # --- IAM Helpers ---
 
 def generate_iam_id(db: Session) -> str:

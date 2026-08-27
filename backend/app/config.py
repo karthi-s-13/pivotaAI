@@ -64,6 +64,19 @@ class Settings(BaseSettings):
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
 
+    # AI Copilot Configuration
+    LLM_PROVIDER: str = "ollama"
+    LLM_MODEL: str = "llama3.2:3b"
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    EMBEDDING_PROVIDER: str = "ollama"
+    EMBEDDING_MODEL: str = "nomic-embed-text"
+    EMBEDDING_DIMENSIONS: int = 768
+    AI_MAX_HISTORY_MESSAGES: int = 12
+    AI_MAX_ROWS: int = 1000
+    AI_QUERY_TIMEOUT_MS: int = 10000
+    AI_MAX_RETRIES: int = 2
+    AI_MAX_RESULT_SIZE_MB: int = 10
+
     # CORS
     CORS_ORIGINS: str = '["http://localhost:5173","http://localhost:3000","http://localhost:3001"]'
 

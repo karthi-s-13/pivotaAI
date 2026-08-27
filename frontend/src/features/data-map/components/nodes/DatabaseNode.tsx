@@ -1,5 +1,7 @@
 /**
  * Database Node — Represents a discovered database.
+ * Neutral white card; differentiated from other node types by icon
+ * and label only, not color.
  */
 
 import React from 'react';
@@ -37,14 +39,10 @@ export const DatabaseNode = React.memo(function DatabaseNode({
   const px = x - W / 2;
   const py = y - H / 2;
 
-  const borderColor = selected
-    ? '#818cf8'
-    : highlighted
-    ? 'rgba(99,102,241,0.4)'
-    : 'rgba(148,163,184,0.1)';
+  const borderColor = selected ? '#000000' : highlighted ? '#111827' : '#d1d5db';
 
   const isLoading = status === 'loading';
-  const opacity = highlighted ? 1 : 0.9;
+  const opacity = highlighted ? 1 : 0.94;
 
   return (
     <g
@@ -54,21 +52,15 @@ export const DatabaseNode = React.memo(function DatabaseNode({
       onDoubleClick={onDoubleClick}
       onContextMenu={onContextMenu}
     >
-      {/* Shadow */}
-      <rect width={W} height={H} rx={10} fill="rgba(0,0,0,0.25)" transform="translate(1.5,2.5)" />
-
       {/* Background */}
       <rect
         width={W}
         height={H}
         rx={10}
-        fill="#111827"
+        fill="#ffffff"
         stroke={borderColor}
         strokeWidth={selected ? 2 : 1.2}
-        style={{
-          filter: selected ? 'drop-shadow(0 0 10px rgba(99,102,241,0.2))' : 'none',
-          transition: 'stroke 0.2s',
-        }}
+        style={{ transition: 'stroke 0.2s' }}
       />
 
       {/* Top accent line */}
@@ -76,28 +68,28 @@ export const DatabaseNode = React.memo(function DatabaseNode({
         width={W}
         height={3}
         rx={1.5}
-        fill={selected ? '#6366f1' : 'rgba(99,102,241,0.4)'}
+        fill="#111827"
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* Database cylinder icon (simplified) */}
+      {/* Database cylinder icon (simplified, monochrome) */}
       <g transform="translate(14, 12)" style={{ pointerEvents: 'none' }}>
-        <ellipse cx={11} cy={4} rx={11} ry={4} fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)" strokeWidth={1} />
-        <rect x={0} y={4} width={22} height={16} fill="rgba(99,102,241,0.08)" />
-        <ellipse cx={11} cy={20} rx={11} ry={4} fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)" strokeWidth={1} />
+        <ellipse cx={11} cy={4} rx={11} ry={4} fill="#f3f4f6" stroke="#9ca3af" strokeWidth={1} />
+        <rect x={0} y={4} width={22} height={16} fill="#fafafa" />
+        <ellipse cx={11} cy={20} rx={11} ry={4} fill="#f3f4f6" stroke="#9ca3af" strokeWidth={1} />
         {/* Horizontal lines on cylinder */}
-        <line x1={0} y1={9} x2={22} y2={9} stroke="rgba(99,102,241,0.2)" strokeWidth={0.8} />
-        <line x1={0} y1={14} x2={22} y2={14} stroke="rgba(99,102,241,0.2)" strokeWidth={0.8} />
+        <line x1={0} y1={9} x2={22} y2={9} stroke="#d1d5db" strokeWidth={0.8} />
+        <line x1={0} y1={14} x2={22} y2={14} stroke="#d1d5db" strokeWidth={0.8} />
       </g>
 
       {/* Label */}
       <text
         x={50}
         y={26}
-        fill="#e2e8f0"
+        fill="#111827"
         fontSize="11"
         fontWeight="700"
-        fontFamily="Inter, sans-serif"
+        fontFamily="'Open Sans', sans-serif"
         style={{ pointerEvents: 'none' }}
       >
         {label.length > 13 ? label.slice(0, 12) + '…' : label}
@@ -107,9 +99,9 @@ export const DatabaseNode = React.memo(function DatabaseNode({
       <text
         x={50}
         y={40}
-        fill="rgba(148,163,184,0.6)"
+        fill="#9ca3af"
         fontSize="8"
-        fontFamily="Inter, sans-serif"
+        fontFamily="'Open Sans', sans-serif"
         style={{ pointerEvents: 'none' }}
       >
         {isLoading ? 'Loading schemas…' : 'Database'}
@@ -126,9 +118,9 @@ export const DatabaseNode = React.memo(function DatabaseNode({
       >
         <rect x={-4} y={-4} width={24} height={24} fill="transparent" />
         {expanded ? (
-          <path d="M4,13 L9,6 L14,13" fill="none" stroke="rgba(148,163,184,0.6)" strokeWidth="1.6" />
+          <path d="M4,13 L9,6 L14,13" fill="none" stroke="#6b7280" strokeWidth="1.6" />
         ) : (
-          <path d="M4,6 L9,13 L14,6" fill="none" stroke="rgba(148,163,184,0.6)" strokeWidth="1.6" />
+          <path d="M4,6 L9,13 L14,6" fill="none" stroke="#6b7280" strokeWidth="1.6" />
         )}
       </g>
     </g>

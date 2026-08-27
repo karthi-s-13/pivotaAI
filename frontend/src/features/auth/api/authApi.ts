@@ -70,6 +70,11 @@ export const authApi = {
     return response.data;
   },
 
+  logout: async (): Promise<{ message: string }> => {
+    const response = await apiClient.post('/auth/logout');
+    return response.data;
+  },
+
   signup: async (data: SignupRequest): Promise<TokenResponse> => {
     const response = await apiClient.post('/auth/signup', data);
     return response.data;

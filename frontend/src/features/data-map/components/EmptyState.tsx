@@ -2,9 +2,11 @@
  * Empty State — Shown when no data sources are connected.
  */
 
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Network } from 'lucide-react';
+import { getProviderColor } from '../types/dataMap.types';
+
+const SUGGESTED_PROVIDERS = ['PostgreSQL', 'MongoDB', 'MySQL', 'Snowflake', 'BigQuery'];
 
 export default function EmptyState() {
   const navigate = useNavigate();
@@ -22,19 +24,18 @@ export default function EmptyState() {
         padding: 48,
       }}
     >
-      {/* Central pulsing circle */}
+      {/* Central badge — black roundel, matching the root node */}
       <div style={{ position: 'relative', marginBottom: 8 }}>
         <div
           style={{
             width: 100,
             height: 100,
             borderRadius: '50%',
-            background: 'rgba(99,102,241,0.06)',
-            border: '1px solid rgba(99,102,241,0.15)',
+            background: '#ffffff',
+            border: '1px solid var(--glass-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            animation: 'rootPulse 3s ease-in-out infinite',
           }}
         >
           <div
@@ -42,35 +43,15 @@ export default function EmptyState() {
               width: 70,
               height: 70,
               borderRadius: '50%',
-              background: 'var(--brand-gradient)',
+              background: '#000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 30px rgba(99,102,241,0.3)',
             }}
           >
-            <Network size={30} color="white" />
+            <Network size={30} color="#ffffff" />
           </div>
         </div>
-        {/* Orbit rings */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: -20,
-            borderRadius: '50%',
-            border: '1px dashed rgba(99,102,241,0.1)',
-            animation: 'spin 20s linear infinite',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            inset: -40,
-            borderRadius: '50%',
-            border: '1px dashed rgba(99,102,241,0.06)',
-            animation: 'spin 30s linear infinite reverse',
-          }}
-        />
       </div>
 
       <div>
@@ -92,24 +73,27 @@ export default function EmptyState() {
         Add Data Source
       </button>
 
-      {/* Hint chips */}
+      {/* Hint chips — provider brand color shown as a thin accent border (sanctioned exception) */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
-        {['PostgreSQL', 'MongoDB', 'MySQL', 'Snowflake', 'BigQuery'].map((p) => (
-          <span
-            key={p}
-            style={{
-              padding: '4px 12px',
-              borderRadius: 20,
-              background: 'rgba(99,102,241,0.06)',
-              border: '1px solid rgba(99,102,241,0.12)',
-              color: 'var(--text-muted)',
-              fontSize: '0.72rem',
-              fontWeight: 500,
-            }}
-          >
-            {p}
-          </span>
-        ))}
+        {SUGGESTED_PROVIDERS.map((p) => {
+          const accent = getProviderColor(p);
+          return (
+            <span
+              key={p}
+              style={{
+                padding: '4px 12px',
+                borderRadius: 9999,
+                background: 'var(--bg-surface)',
+                border: `1px solid ${accent}55`,
+                color: 'var(--text-secondary)',
+                fontSize: '0.72rem',
+                fontWeight: 500,
+              }}
+            >
+              {p}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

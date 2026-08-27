@@ -129,8 +129,8 @@ export default function IAMLoginPage() {
               style={{
                 display: 'block',
                 fontSize: '0.8rem',
-                fontWeight: 600,
-                color: '#333333',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
                 marginBottom: 6,
               }}
             >
@@ -143,14 +143,7 @@ export default function IAMLoginPage() {
               placeholder="name@company.com"
               required
               id="iam-login-email"
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '1px solid #d0d0d0',
-                borderRadius: 8,
-                fontSize: '0.88rem',
-                outline: 'none',
-              }}
+              className="input-field"
             />
           </div>
 
@@ -160,8 +153,8 @@ export default function IAMLoginPage() {
               style={{
                 display: 'block',
                 fontSize: '0.8rem',
-                fontWeight: 600,
-                color: '#333333',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
                 marginBottom: 6,
               }}
             >
@@ -174,14 +167,7 @@ export default function IAMLoginPage() {
               placeholder="EMP-1001"
               required
               id="iam-login-id"
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '1px solid #d0d0d0',
-                borderRadius: 8,
-                fontSize: '0.88rem',
-                outline: 'none',
-              }}
+              className="input-field"
             />
           </div>
 
@@ -191,8 +177,8 @@ export default function IAMLoginPage() {
               style={{
                 display: 'block',
                 fontSize: '0.8rem',
-                fontWeight: 600,
-                color: '#333333',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
                 marginBottom: 6,
               }}
             >
@@ -206,15 +192,8 @@ export default function IAMLoginPage() {
                 placeholder="••••••••••••"
                 required
                 id="iam-login-password"
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  paddingRight: 44,
-                  border: '1px solid #d0d0d0',
-                  borderRadius: 8,
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                }}
+                className="input-field"
+                style={{ paddingRight: 44 }}
               />
               <button
                 type="button"
@@ -226,7 +205,7 @@ export default function IAMLoginPage() {
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
-                  color: '#888888',
+                  color: 'var(--text-muted)',
                   cursor: 'pointer',
                   padding: 4,
                 }}

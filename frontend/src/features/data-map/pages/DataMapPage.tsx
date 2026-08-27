@@ -113,24 +113,14 @@ export default function DataMapPage() {
           gap: 24,
         }}
       >
-        {/* Animated constellation loader */}
+        {/* Loader — black roundel, matching the root node badge */}
         <div style={{ position: 'relative', width: 120, height: 120 }}>
           <div
             style={{
               position: 'absolute',
               inset: 0,
               borderRadius: '50%',
-              border: '2px solid rgba(99,102,241,0.2)',
-              animation: 'spin 3s linear infinite',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              inset: 15,
-              borderRadius: '50%',
-              border: '1px dashed rgba(99,102,241,0.15)',
-              animation: 'spin 5s linear infinite reverse',
+              border: '1px solid var(--glass-border)',
             }}
           />
           <div
@@ -138,14 +128,13 @@ export default function DataMapPage() {
               position: 'absolute',
               inset: 30,
               borderRadius: '50%',
-              background: 'var(--brand-gradient)',
+              background: '#000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 20px rgba(99,102,241,0.3)',
             }}
           >
-            <Loader2 size={22} color="white" style={{ animation: 'spin 1.5s linear infinite' }} />
+            <Loader2 size={22} color="#ffffff" className="animate-spin" />
           </div>
         </div>
         <div style={{ textAlign: 'center' }}>
@@ -179,7 +168,7 @@ export default function DataMapPage() {
             width: 60,
             height: 60,
             borderRadius: 16,
-            background: 'rgba(239,68,68,0.1)',
+            background: 'var(--status-error-bg)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -240,9 +229,9 @@ export default function DataMapPage() {
             <div
               style={{
                 flex: 1,
-                background: '#080d18',
-                borderRadius: 16,
-                border: '1px solid rgba(148,163,184,0.08)',
+                background: 'var(--bg-elevated)',
+                borderRadius: 12,
+                border: '1px solid var(--glass-border)',
                 display: 'flex',
               }}
             >
@@ -284,9 +273,8 @@ export default function DataMapPage() {
                 position: 'absolute',
                 top: 12,
                 right: 12,
-                background: 'rgba(17,24,39,0.75)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(148,163,184,0.08)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--glass-border)',
                 borderRadius: 8,
                 padding: '6px 12px',
                 fontSize: '0.68rem',
@@ -307,15 +295,15 @@ export default function DataMapPage() {
                 top: 12,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: 'rgba(245,158,11,0.12)',
-                border: '1px solid rgba(245,158,11,0.25)',
+                background: 'var(--status-warning-bg)',
+                border: '1px solid var(--status-warning)',
                 borderRadius: 8,
                 padding: '6px 14px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
                 fontSize: '0.7rem',
-                color: '#f59e0b',
+                color: 'var(--status-warning)',
                 zIndex: 5,
               }}
             >

@@ -882,6 +882,18 @@ def sync_data_source_background(source_id: str, organization_id: str, user_id: s
     db = SessionLocal()
     try:
         sync_data_source_metadata_stats(db, source_id, organization_id)
+
+        # Automatically trigger schema embedding indexing to pgvector
+        try:
+            from app.ai.schema.schema_indexer import index_data_source_schema
+            index_data_source_schema(
+                db=db,
+                data_source_id=source_id,
+                organization_id=organization_id,
+            )
+        except Exception as idx_err:
+            logger.error(f"Failed to auto-index data source {source_id} to pgvector: {idx_err}")
+
         # Log discovery completed audit event
         audit_service.log_event(
             db=db,

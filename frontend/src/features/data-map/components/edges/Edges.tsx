@@ -2,6 +2,9 @@
  * Edge Components — Hierarchy and Relationship edges.
  * Hierarchy: solid curved line from parent to child.
  * Relationship: dashed FK connection between table nodes.
+ *
+ * Both edge types are monochrome black/gray — they are differentiated
+ * from each other by dash pattern, not by color.
  */
 
 import React from 'react';
@@ -19,15 +22,6 @@ function cubicBezierPath(
 ): string {
   const dx = x2 - x1;
   const dy = y2 - y1;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  const curve = Math.min(dist * 0.45, 100);
-
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2;
-
-  // Perpendicular offset for slight curve
-  const nx = -dy / dist;
-  const ny = dx / dist;
 
   const cx1 = x1 + dx * 0.35;
   const cy1 = y1 + dy * 0.15;
@@ -50,7 +44,6 @@ interface HierarchyEdgeProps {
 }
 
 export const HierarchyEdge = React.memo(function HierarchyEdge({
-  edge,
   sourceNode,
   targetNode,
   isHighlighted,
@@ -64,10 +57,10 @@ export const HierarchyEdge = React.memo(function HierarchyEdge({
   );
 
   const stroke = isSelected
-    ? 'rgba(129,140,248,0.7)'
+    ? 'rgba(0,0,0,0.75)'
     : isHighlighted
-    ? 'rgba(99,102,241,0.4)'
-    : 'rgba(99,102,241,0.15)';
+    ? 'rgba(0,0,0,0.4)'
+    : 'rgba(0,0,0,0.16)';
 
   const strokeWidth = isSelected ? 2.5 : isHighlighted ? 1.8 : 1;
 
@@ -81,7 +74,7 @@ export const HierarchyEdge = React.memo(function HierarchyEdge({
         strokeWidth={12}
         style={{ cursor: 'default' }}
       />
-      {/* Visible path */}
+      {/* Visible path — solid */}
       <path
         d={path}
         fill="none"
@@ -125,10 +118,10 @@ export const RelationshipEdge = React.memo(function RelationshipEdge({
   );
 
   const stroke = isSelected
-    ? 'rgba(16,185,129,0.9)'
+    ? 'rgba(0,0,0,0.8)'
     : isHighlighted
-    ? 'rgba(16,185,129,0.6)'
-    : 'rgba(16,185,129,0.22)';
+    ? 'rgba(0,0,0,0.5)'
+    : 'rgba(0,0,0,0.22)';
 
   const strokeWidth = isSelected ? 2.5 : isHighlighted ? 2 : 1.2;
 
@@ -142,7 +135,7 @@ export const RelationshipEdge = React.memo(function RelationshipEdge({
         strokeWidth={14}
         style={{ cursor: 'pointer' }}
       />
-      {/* Visible dashed path */}
+      {/* Visible dashed path — dash pattern is what distinguishes FK edges */}
       <path
         d={path}
         fill="none"
@@ -180,16 +173,16 @@ function FKLabel({ label }: { path: string; label: string }) {
         width={w}
         height={h}
         rx={4}
-        fill="#0d1526"
-        stroke="rgba(16,185,129,0.35)"
+        fill="#ffffff"
+        stroke="rgba(0,0,0,0.4)"
         strokeWidth={1}
       />
       <text
         textAnchor="middle"
         dominantBaseline="middle"
-        fill="rgba(16,185,129,0.9)"
+        fill="#111827"
         fontSize="7.5"
-        fontFamily="JetBrains Mono, monospace"
+        fontFamily="'JetBrains Mono', monospace"
       >
         {truncated}
       </text>
@@ -214,7 +207,7 @@ export function EdgeMarkerDefs() {
         markerHeight="6"
         orient="auto-start-reverse"
       >
-        <path d="M 0 1 L 9 5 L 0 9 z" fill="rgba(16,185,129,0.5)" />
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="rgba(0,0,0,0.45)" />
       </marker>
       <marker
         id="fk-arrow-highlighted"
@@ -225,7 +218,7 @@ export function EdgeMarkerDefs() {
         markerHeight="7"
         orient="auto-start-reverse"
       >
-        <path d="M 0 1 L 9 5 L 0 9 z" fill="rgba(16,185,129,0.9)" />
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="rgba(0,0,0,0.85)" />
       </marker>
     </defs>
   );

@@ -78,23 +78,13 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
             detail="Account is deactivated",
         )
 
-    # Check if user has a verified OTP record (email already verified in a previous session)
-    has_verified_otp = (
-        db.query(OTPRecord)
-        .filter(
-            OTPRecord.user_id == user.id,
-            OTPRecord.is_used == True,
-        )
-        .first()
-    )
-
     token = _create_token(user.id, user.email)
 
     return AuthTokenResponse(
         access_token=token,
         user_id=user.id,
         email=user.email,
-        is_email_verified=has_verified_otp is not None,
+        is_email_verified=False,  # Force email OTP verification on every login
     )
 
 

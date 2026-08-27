@@ -97,6 +97,12 @@ def login(db: Session, email: str, password: str) -> TokenResponse:
     # Load organization
     org = db.query(Organization).filter(Organization.id == user.organization_id).first()
 
+    # Reset 2FA status for Admin users upon a new credentials login
+    if user.role == "admin":
+        user.is_2fa_verified = False
+        db.commit()
+        db.refresh(user)
+
     # Generate tokens
     token_data = {"sub": user.id, "org": user.organization_id, "role": user.role}
     access_token = create_access_token(token_data)

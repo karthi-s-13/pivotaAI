@@ -1,5 +1,11 @@
 /**
  * Provider Node — Represents a connected data source.
+ *
+ * The only accent color allowed here is the real provider brand
+ * color (PostgreSQL blue, MongoDB green, etc.) shown as a thin left
+ * border stripe — the sanctioned "brand recognition" exception.
+ * Everything else is black / white / gray, and status is conveyed
+ * only through the shared status tokens.
  */
 
 import React from 'react';
@@ -24,6 +30,14 @@ interface ProviderNodeProps {
 const W = 168;
 const H = 76;
 
+/** Shared status → token color mapping, consistent with StatusIndicator. */
+function statusColorVar(isError: boolean, isSyncing: boolean, isConnected: boolean): string {
+  if (isError) return 'var(--status-error)';
+  if (isSyncing) return 'var(--status-info)';
+  if (isConnected) return 'var(--status-success)';
+  return 'var(--text-disabled)';
+}
+
 export const ProviderNode = React.memo(function ProviderNode({
   x,
   y,
@@ -45,23 +59,12 @@ export const ProviderNode = React.memo(function ProviderNode({
   const isConnected = metadata.connection_status === 'connected';
   const isError = status === 'error';
   const isSyncing = status === 'loading' || status === 'syncing' || metadata.health_status === 'syncing';
-  const isIdle = status === 'idle' || (!isConnected && !isError && !isSyncing);
 
-  const statusColor = isError
-    ? '#ef4444'
-    : isSyncing
-    ? '#f59e0b'
-    : isConnected
-    ? '#10b981'
-    : '#64748b'; // grey for idle/unknown
+  const statusColor = statusColorVar(isError, isSyncing, isConnected);
 
-  const borderColor = selected
-    ? '#818cf8'
-    : highlighted
-    ? `${color}80`
-    : 'rgba(148,163,184,0.12)';
+  const borderColor = selected ? '#000000' : highlighted ? '#111827' : '#d1d5db';
 
-  const opacity = highlighted ? 1 : 0.88;
+  const opacity = highlighted ? 1 : 0.92;
 
   // Provider type abbreviation icon
   const abbrev = metadata.provider_type.slice(0, 2).toUpperCase();
@@ -74,63 +77,46 @@ export const ProviderNode = React.memo(function ProviderNode({
       onDoubleClick={onDoubleClick}
       onContextMenu={onContextMenu}
     >
-      {/* Drop shadow */}
-      <rect
-        width={W}
-        height={H}
-        rx={12}
-        fill="rgba(0,0,0,0.3)"
-        transform="translate(2,3)"
-      />
-
       {/* Card background */}
       <rect
         width={W}
         height={H}
         rx={12}
-        fill="#1a2235"
+        fill="#ffffff"
         stroke={borderColor}
-        strokeWidth={selected ? 2 : 1.5}
-        style={{
-          filter: selected
-            ? `drop-shadow(0 0 12px rgba(99,102,241,0.25))`
-            : highlighted
-            ? `drop-shadow(0 0 8px ${color}30)`
-            : 'none',
-          transition: 'stroke 0.2s, filter 0.2s',
-        }}
+        strokeWidth={selected ? 2 : 1.2}
+        style={{ transition: 'stroke 0.2s' }}
       />
 
-      {/* Left color stripe */}
-      <rect width={4} height={H} rx={2} fill={color} opacity={0.9} />
-      <rect x={0} y={0} width={4} height={H} rx={2} fill={color} />
+      {/* Left stripe — the one sanctioned brand-color accent */}
+      <rect x={0} y={0} width={3} height={H} rx={1.5} fill={color} />
 
-      {/* Provider icon circle */}
-      <circle cx={32} cy={H / 2} r={18} fill={`${color}22`} stroke={`${color}55`} strokeWidth={1} />
+      {/* Provider icon circle — neutral, no brand color */}
+      <circle cx={32} cy={H / 2} r={18} fill="#f3f4f6" stroke="#e5e7eb" strokeWidth={1} />
       <text
         x={32}
         y={H / 2 + 4}
         textAnchor="middle"
-        fill={color}
+        fill="#111827"
         fontSize="9"
         fontWeight="800"
-        fontFamily="JetBrains Mono, monospace"
+        fontFamily="'JetBrains Mono', monospace"
         style={{ pointerEvents: 'none' }}
       >
         {abbrev}
       </text>
 
-      {/* Status dot */}
-      <circle cx={W - 14} cy={14} r={5} fill={statusColor} style={{ filter: `drop-shadow(0 0 4px ${statusColor})` }} />
+      {/* Status dot — shared status tokens only */}
+      <circle cx={W - 14} cy={14} r={5} style={{ fill: statusColor }} />
 
       {/* Provider name */}
       <text
         x={56}
         y={28}
-        fill="#f1f5f9"
+        fill="#111827"
         fontSize="12"
         fontWeight="700"
-        fontFamily="Inter, sans-serif"
+        fontFamily="'Open Sans', sans-serif"
         style={{ pointerEvents: 'none' }}
       >
         {label.length > 14 ? label.slice(0, 13) + '…' : label}
@@ -140,27 +126,27 @@ export const ProviderNode = React.memo(function ProviderNode({
       <text
         x={56}
         y={44}
-        fill={color}
+        fill="#6b7280"
         fontSize="8.5"
         fontWeight="600"
-        fontFamily="Inter, sans-serif"
+        fontFamily="'Open Sans', sans-serif"
         style={{ pointerEvents: 'none' }}
       >
         {providerLabel}
       </text>
 
-      {/* DB count badge */}
+      {/* DB count badge — neutral pill */}
       {metadata.databases_count > 0 && (
         <>
-          <rect x={56} y={52} width={48} height={14} rx={4} fill={`${color}20`} />
+          <rect x={56} y={52} width={48} height={14} rx={7} fill="#f3f4f6" />
           <text
             x={80}
             y={62}
             textAnchor="middle"
-            fill={color}
+            fill="#374151"
             fontSize="8"
             fontWeight="700"
-            fontFamily="Inter, sans-serif"
+            fontFamily="'Open Sans', sans-serif"
             style={{ pointerEvents: 'none' }}
           >
             {metadata.databases_count} {metadata.databases_count === 1 ? 'database' : 'databases'}
@@ -179,17 +165,17 @@ export const ProviderNode = React.memo(function ProviderNode({
       >
         <rect x={-4} y={-4} width={24} height={24} fill="transparent" />
         {expanded ? (
-          <path d="M4,14 L10,6 L16,14" fill="none" stroke="rgba(148,163,184,0.7)" strokeWidth="1.8" />
+          <path d="M4,14 L10,6 L16,14" fill="none" stroke="#6b7280" strokeWidth="1.8" />
         ) : (
-          <path d="M4,6 L10,14 L16,6" fill="none" stroke="rgba(148,163,184,0.7)" strokeWidth="1.8" />
+          <path d="M4,6 L10,14 L16,6" fill="none" stroke="#6b7280" strokeWidth="1.8" />
         )}
       </g>
 
       {/* Error overlay — only for genuine connection failures */}
       {isError && (
         <>
-          <rect width={W} height={H} rx={12} fill="rgba(239,68,68,0.06)" style={{ pointerEvents: 'none' }} />
-          <text x={W / 2} y={H - 8} textAnchor="middle" fill="#ef4444" fontSize="7.5" fontWeight="600" style={{ pointerEvents: 'none' }}>
+          <rect width={W} height={H} rx={12} fill="var(--status-error-bg)" style={{ pointerEvents: 'none' }} />
+          <text x={W / 2} y={H - 8} textAnchor="middle" fill="var(--status-error)" fontSize="7.5" fontWeight="600" style={{ pointerEvents: 'none' }}>
             Connection Error
           </text>
         </>
@@ -197,7 +183,7 @@ export const ProviderNode = React.memo(function ProviderNode({
 
       {/* Syncing indicator */}
       {isSyncing && (
-        <text x={W / 2} y={H - 8} textAnchor="middle" fill="#f59e0b" fontSize="7.5" fontWeight="600" style={{ pointerEvents: 'none' }}>
+        <text x={W / 2} y={H - 8} textAnchor="middle" fill="var(--status-info)" fontSize="7.5" fontWeight="600" style={{ pointerEvents: 'none' }}>
           Syncing…
         </text>
       )}

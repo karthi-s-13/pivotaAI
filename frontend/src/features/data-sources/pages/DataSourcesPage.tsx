@@ -6,13 +6,14 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Database, Plus, RefreshCw, Trash2, Wifi, WifiOff,
-  CheckCircle, XCircle, AlertTriangle, Clock, Loader2,
-  Filter, Search,
+  Database, Plus, RefreshCw, Trash2, Wifi,
+  CheckCircle, XCircle, AlertTriangle, Loader2,
+  Search,
 } from 'lucide-react';
 import { dataSourceApi } from '../api/dataSourceApi';
-import type { DataSource, ConnectionTestResult } from '../api/dataSourceApi';
+import type { DataSource } from '../api/dataSourceApi';
 import AddDataSourceWizard from '../components/AddDataSourceWizard';
+import { getProviderColor, getProviderLabel } from '../../data-map/types/dataMap.types';
 
 export default function DataSourcesPage() {
   const [sources, setSources] = useState<DataSource[]>([]);
@@ -72,12 +73,6 @@ export default function DataSourcesPage() {
     }
   };
 
-  const providerColor = (type: string) =>
-    type === 'postgresql' ? '#6366f1' : type === 'mongodb' ? '#10b981' : type === 'sqlserver' ? '#3b82f6' : '#8b5cf6';
-
-  const providerLabel = (type: string) =>
-    type === 'postgresql' ? 'PostgreSQL' : type === 'mongodb' ? 'MongoDB' : type === 'sqlserver' ? 'SQL Server' : type;
-
   if (showWizard) {
     return (
       <AddDataSourceWizard
@@ -93,7 +88,7 @@ export default function DataSourcesPage() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 4 }}>Data Sources</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -114,10 +109,10 @@ export default function DataSourcesPage() {
             display: 'flex',
             alignItems: 'center',
             gap: 10,
-            background: 'var(--bg-elevated)',
+            background: '#ffffff',
             border: '1px solid var(--border-default)',
-            borderRadius: 10,
-            padding: '8px 14px',
+            borderRadius: 9999,
+            padding: '8px 16px',
           }}
         >
           <Search size={16} style={{ color: 'var(--text-muted)' }} />
@@ -143,7 +138,15 @@ export default function DataSourcesPage() {
 
       {/* Empty State */}
       {!loading && filtered.length === 0 && (
-        <div className="glass-card" style={{ textAlign: 'center', padding: '60px 30px' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '60px 30px',
+            background: 'var(--bg-elevated)',
+            border: '1px dashed var(--border-default)',
+            borderRadius: 12,
+          }}
+        >
           <Database size={48} style={{ color: 'var(--text-disabled)', marginBottom: 16 }} />
           <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 8 }}>
             {sources.length === 0 ? 'No data sources yet' : 'No results found'}
@@ -175,8 +178,15 @@ export default function DataSourcesPage() {
             return (
               <div
                 key={sId}
-                className="glass-card animate-fade-in"
-                style={{ padding: '20px', animationDelay: `${i * 0.05}s`, opacity: 0 }}
+                className="hover-card animate-fade-in"
+                style={{
+                  padding: '20px',
+                  animationDelay: `${i * 0.05}s`,
+                  opacity: 0,
+                  background: '#ffffff',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 12,
+                }}
               >
                 {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
@@ -186,11 +196,12 @@ export default function DataSourcesPage() {
                         width: 40,
                         height: 40,
                         borderRadius: 10,
-                        background: `${providerColor(sProvider)}18`,
+                        background: `${getProviderColor(sProvider)}18`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: providerColor(sProvider),
+                        color: getProviderColor(sProvider),
+                        flexShrink: 0,
                       }}
                     >
                       <Database size={20} />
@@ -198,7 +209,7 @@ export default function DataSourcesPage() {
                     <div>
                       <h3 style={{ fontSize: '0.95rem', fontWeight: 600, lineHeight: 1.2 }}>{sName}</h3>
                       <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                        {providerLabel(sProvider)} · {sEnv}
+                        {getProviderLabel(sProvider)} · {sEnv}
                       </p>
                     </div>
                   </div>

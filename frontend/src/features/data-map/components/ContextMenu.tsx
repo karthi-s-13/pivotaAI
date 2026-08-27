@@ -5,7 +5,6 @@
 import React, { useEffect, useRef } from 'react';
 import {
   ChevronRight,
-  ChevronDown,
   Info,
   RefreshCw,
   ExternalLink,
@@ -91,10 +90,9 @@ export default function ContextMenu({
         position: 'fixed',
         left: x,
         top: y,
-        background: '#1a2235',
-        border: '1px solid rgba(148,163,184,0.12)',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--glass-border)',
         borderRadius: 10,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
         zIndex: 1000,
         minWidth: 172,
         overflow: 'hidden',
@@ -105,7 +103,7 @@ export default function ContextMenu({
       <div
         style={{
           padding: '8px 12px 6px',
-          borderBottom: '1px solid rgba(148,163,184,0.06)',
+          borderBottom: '1px solid var(--bg-elevated)',
         }}
       >
         <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -119,7 +117,7 @@ export default function ContextMenu({
       {/* Menu items */}
       {items.map((item, i) => {
         if (item.separator) {
-          return <div key={i} style={{ height: 1, background: 'rgba(148,163,184,0.06)', margin: '2px 0' }} />;
+          return <div key={i} style={{ height: 1, background: 'var(--bg-elevated)', margin: '2px 0' }} />;
         }
         return (
           <button
@@ -138,7 +136,7 @@ export default function ContextMenu({
               color: item.disabled
                 ? 'var(--text-disabled)'
                 : item.danger
-                ? '#ef4444'
+                ? 'var(--status-error)'
                 : 'var(--text-secondary)',
               fontSize: '0.75rem',
               textAlign: 'left',
@@ -146,8 +144,8 @@ export default function ContextMenu({
             }}
             onMouseEnter={(e) => {
               if (!item.disabled) {
-                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(99,102,241,0.08)';
-                (e.currentTarget as HTMLButtonElement).style.color = item.danger ? '#ef4444' : 'var(--text-primary)';
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-elevated)';
+                (e.currentTarget as HTMLButtonElement).style.color = item.danger ? 'var(--status-error)' : 'var(--text-primary)';
               }
             }}
             onMouseLeave={(e) => {

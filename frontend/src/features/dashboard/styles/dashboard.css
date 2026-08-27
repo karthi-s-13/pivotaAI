@@ -84,6 +84,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
 }
 
 .metric-card__trend {
@@ -546,18 +548,18 @@
 }
 
 .env-badge--production {
-  background: rgba(99, 102, 241, 0.12);
-  color: #818cf8;
+  background: var(--brand-primary);
+  color: #ffffff;
 }
 
 .env-badge--development {
-  background: rgba(16, 185, 129, 0.12);
-  color: #10b981;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
 }
 
 .env-badge--staging {
-  background: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
+  background: var(--status-warning-bg);
+  color: var(--status-warning);
 }
 
 /* ─── Actions Menu ───────────────────────────── */

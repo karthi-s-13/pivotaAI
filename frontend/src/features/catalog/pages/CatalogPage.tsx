@@ -78,11 +78,33 @@ export default function CatalogPage() {
         setSchemas(schs);
         setObjects(objs);
 
-        // Check if objectId is in URL
+        // Check if objectId or query tool params are in URL
         const params = new URLSearchParams(window.location.search);
         const urlObjectId = params.get('objectId');
+        const urlDbId = params.get('queryToolDbId');
+        const urlSql = params.get('sql');
+        const urlDbName = params.get('queryToolDbName') || 'Database';
         
         const initialExpanded: Record<string, boolean> = {};
+        
+        if (urlDbId && urlSql) {
+          setQueryToolDbId(urlDbId);
+          setSqlQuery(urlSql);
+          setQueryToolDbName(urlDbName);
+          setQueryToolOpen(true);
+          
+          let detectedDialect = 'postgresql';
+          const combinedName = (urlDbName).toLowerCase();
+          if (combinedName.includes('mysql') || combinedName.includes('mariadb')) {
+            detectedDialect = 'mysql';
+          } else if (combinedName.includes('sqlserver') || combinedName.includes('mssql') || combinedName.includes('sql server')) {
+            detectedDialect = 'sqlserver';
+          } else if (combinedName.includes('mongo')) {
+            detectedDialect = 'mongodb';
+          }
+          setQueryLanguage(detectedDialect);
+        }
+
         if (urlObjectId) {
           try {
             const details = await catalogApi.getObjectDetails(urlObjectId);
@@ -272,9 +294,9 @@ export default function CatalogPage() {
       {/* Sidebar Browser (Data Explorer tree) */}
       <div 
         style={{ 
-          background: 'var(--bg-elevated)', 
-          border: '1px solid var(--border-default)', 
-          borderRadius: 16, 
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border-default)',
+          borderRadius: 12,
           padding: 20,
           display: 'flex',
           flexDirection: 'column',
@@ -326,7 +348,7 @@ export default function CatalogPage() {
                       padding: '8px 10px', 
                       borderRadius: 8,
                       cursor: 'pointer',
-                      background: 'rgba(255,255,255,0.01)',
+                      background: 'transparent',
                       transition: 'background 0.2s',
                       userSelect: 'none'
                     }}
@@ -345,9 +367,9 @@ export default function CatalogPage() {
                         openQueryTool(db.id, db.name, db.data_source_name);
                       }}
                       style={{
-                        background: 'rgba(99,102,241,0.08)',
+                        background: 'var(--bg-elevated)',
                         border: 'none',
-                        borderRadius: 6,
+                        borderRadius: 9999,
                         width: 26,
                         height: 26,
                         display: 'flex',
@@ -390,7 +412,7 @@ export default function CatalogPage() {
                                 className="hover-row"
                               >
                                 {isSchemaExpanded ? <ChevronDown size={12} style={{ color: 'var(--text-muted)', marginRight: 6 }} /> : <ChevronRight size={12} style={{ color: 'var(--text-muted)', marginRight: 6 }} />}
-                                <Layers size={12} style={{ color: '#8b5cf6', marginRight: 8 }} />
+                                <Layers size={12} style={{ color: 'var(--text-secondary)', marginRight: 8 }} />
                                 <span style={{ fontSize: '0.78rem', fontWeight: 500, color: 'var(--text-secondary)' }}>{schema.name}</span>
                               </div>
 
@@ -417,7 +439,7 @@ export default function CatalogPage() {
                                             borderRadius: 6,
                                             border: 'none',
                                             textAlign: 'left',
-                                            background: isSelected ? 'rgba(99,102,241,0.08)' : 'transparent',
+                                            background: isSelected ? 'var(--bg-elevated)' : 'transparent',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s',
                                             width: '100%',
@@ -426,7 +448,7 @@ export default function CatalogPage() {
                                           className="hover-row"
                                         >
                                           {obj.type === 'VIEW' ? (
-                                            <Eye size={12} style={{ color: '#8b5cf6' }} />
+                                            <Eye size={12} style={{ color: 'var(--text-secondary)' }} />
                                           ) : (
                                             <Table size={12} style={{ color: 'var(--brand-primary)' }} />
                                           )}
@@ -485,7 +507,7 @@ export default function CatalogPage() {
           }}
         >
           {error && (
-            <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10, padding: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ background: 'var(--status-error-bg)', border: '1px solid var(--status-error)', borderRadius: 10, padding: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
               <AlertCircle size={16} style={{ color: 'var(--status-error)' }} />
               <span style={{ fontSize: '0.8rem', color: 'var(--status-error)' }}>{error}</span>
             </div>
@@ -505,13 +527,13 @@ export default function CatalogPage() {
                 flex: 1,
                 background: 'var(--bg-elevated)',
                 border: '1px dashed var(--border-default)',
-                borderRadius: 16,
+                borderRadius: 12,
                 textAlign: 'center',
                 padding: 40,
                 minHeight: '40vh'
               }}
             >
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(99,102,241,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--bg-surface)', border: '1px solid var(--border-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                 <FileText size={28} style={{ color: 'var(--brand-primary)' }} />
               </div>
               <h4 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 6 }}>No Relation Selected</h4>
@@ -524,19 +546,19 @@ export default function CatalogPage() {
               
               {/* Header Detail Card (Rendered if object is selected) */}
               {objectDetails && (
-                <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', borderRadius: 16, padding: 20 }}>
+                <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', borderRadius: 12, padding: 20 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                         <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0 }}>{objectDetails.name}</h2>
-                        <span 
-                          style={{ 
-                            fontSize: '0.68rem', 
-                            fontWeight: 600, 
-                            padding: '2px 8px', 
-                            borderRadius: 6, 
-                            background: objectDetails.type === 'VIEW' ? 'rgba(139,92,246,0.1)' : 'rgba(99,102,241,0.1)',
-                            color: objectDetails.type === 'VIEW' ? '#8b5cf6' : 'var(--brand-primary)',
+                        <span
+                          style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 600,
+                            padding: '2px 10px',
+                            borderRadius: 9999,
+                            background: '#000000',
+                            color: '#ffffff',
                           }}
                         >
                           {objectDetails.type}
@@ -586,7 +608,7 @@ export default function CatalogPage() {
               </div>
 
               {/* Tab Content rendering */}
-              <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
                 
                 {/* 1. Records Preview Tab */}
                 {activeTab === 'records' && (
@@ -604,7 +626,7 @@ export default function CatalogPage() {
                         <div style={{ overflow: 'auto', flex: 1, minHeight: 0 }}>
                           <table className="table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
                             <thead>
-                              <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'rgba(255,255,255,0.02)', position: 'sticky', top: 0, zIndex: 1 }}>
+                              <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'var(--bg-elevated)', position: 'sticky', top: 0, zIndex: 1 }}>
                                 {recordColumns.map(col => (
                                   <th key={col} style={{ padding: '10px 14px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', background: 'var(--bg-elevated)' }}>
                                     {col}
@@ -624,8 +646,8 @@ export default function CatalogPage() {
                                         ) : typeof val === 'boolean' ? (
                                           <span style={{
                                             fontSize: '0.62rem', fontWeight: 700, padding: '2px 6px', borderRadius: 4,
-                                            background: val ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                                            color: val ? '#10b981' : '#ef4444'
+                                            background: val ? '#000000' : 'var(--bg-elevated)',
+                                            color: val ? '#ffffff' : 'var(--text-muted)'
                                           }}>
                                             {val.toString().toUpperCase()}
                                           </span>
@@ -646,12 +668,12 @@ export default function CatalogPage() {
                         </div>
 
                         {/* Pagination Controls */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '12px 20px', borderTop: '1px solid var(--border-default)', background: 'rgba(255,255,255,0.01)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '12px 20px', borderTop: '1px solid var(--border-default)', background: 'var(--bg-elevated)' }}>
                           <button
                             onClick={() => loadRecords(selectedObjectId, recordsPage - 1)}
                             disabled={recordsPage === 1 || loadingRecords}
                             style={{
-                              background: 'none', border: '1px solid var(--border-default)', borderRadius: 8,
+                              background: '#ffffff', border: '1px solid var(--border-default)', borderRadius: 9999,
                               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
                               cursor: recordsPage === 1 ? 'not-allowed' : 'pointer', color: 'var(--text-primary)',
                               opacity: recordsPage === 1 ? 0.4 : 1, transition: 'all 0.2s'
@@ -670,7 +692,7 @@ export default function CatalogPage() {
                             onClick={() => loadRecords(selectedObjectId, recordsPage + 1)}
                             disabled={recordsPage * 20 >= recordsTotalCount || loadingRecords}
                             style={{
-                              background: 'none', border: '1px solid var(--border-default)', borderRadius: 8,
+                              background: '#ffffff', border: '1px solid var(--border-default)', borderRadius: 9999,
                               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
                               cursor: recordsPage * 20 >= recordsTotalCount ? 'not-allowed' : 'pointer', color: 'var(--text-primary)',
                               opacity: recordsPage * 20 >= recordsTotalCount ? 0.4 : 1, transition: 'all 0.2s'
@@ -689,7 +711,7 @@ export default function CatalogPage() {
                   <div style={{ overflow: 'auto', flex: 1 }}>
                     <table className="table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
-                        <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'rgba(255,255,255,0.02)' }}>
+                        <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'var(--bg-elevated)' }}>
                           <th style={{ padding: '12px 16px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', width: 60 }}>#</th>
                           <th style={{ padding: '12px 16px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Name</th>
                           <th style={{ padding: '12px 16px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Type</th>
@@ -710,12 +732,12 @@ export default function CatalogPage() {
                             <td style={{ padding: '12px 16px' }}>
                               <div style={{ display: 'flex', gap: 6 }}>
                                 {col.is_primary_key && (
-                                  <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: 'rgba(245,158,11,0.1)', color: '#f59e0b', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                  <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: 9999, background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                                     <Key size={10} /> PK
                                   </span>
                                 )}
                                 {col.is_foreign_key && (
-                                  <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: 'rgba(16,185,129,0.1)', color: '#10b981', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                  <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: 9999, background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                                     <Share2 size={10} /> FK
                                   </span>
                                 )}
@@ -750,7 +772,7 @@ export default function CatalogPage() {
                     ) : (
                       <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
-                          <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'rgba(255,255,255,0.02)' }}>
+                          <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'var(--bg-elevated)' }}>
                             <th style={{ padding: '12px 16px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Index Name</th>
                             <th style={{ padding: '12px 16px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Columns</th>
                             <th style={{ padding: '12px 16px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Unique</th>
@@ -767,14 +789,14 @@ export default function CatalogPage() {
                               </td>
                               <td style={{ padding: '12px 16px', fontSize: '0.78rem' }}>
                                 {idx.unique ? (
-                                  <span style={{ color: 'var(--status-success)', fontWeight: 600 }}>YES</span>
+                                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>YES</span>
                                 ) : (
                                   <span style={{ color: 'var(--text-muted)' }}>NO</span>
                                 )}
                               </td>
                               <td style={{ padding: '12px 16px', fontSize: '0.78rem' }}>
                                 {idx.primary ? (
-                                  <span style={{ color: '#f59e0b', fontWeight: 600 }}>YES</span>
+                                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>YES</span>
                                 ) : (
                                   <span style={{ color: 'var(--text-muted)' }}>NO</span>
                                 )}
@@ -802,13 +824,13 @@ export default function CatalogPage() {
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                           {objectDetails.relationships_outbound.map(rel => (
-                            <div 
-                              key={rel.id} 
-                              style={{ 
-                                padding: 12, 
-                                borderRadius: 10, 
-                                background: 'rgba(255,255,255,0.01)', 
-                                border: '1px solid var(--border-default)', 
+                            <div
+                              key={rel.id}
+                              style={{
+                                padding: 12,
+                                borderRadius: 10,
+                                background: '#ffffff',
+                                border: '1px solid var(--border-default)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between'
@@ -853,13 +875,13 @@ export default function CatalogPage() {
                       ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                           {objectDetails.relationships_inbound.map(rel => (
-                            <div 
-                              key={rel.id} 
-                              style={{ 
-                                padding: 12, 
-                                borderRadius: 10, 
-                                background: 'rgba(255,255,255,0.01)', 
-                                border: '1px solid var(--border-default)', 
+                            <div
+                              key={rel.id}
+                              style={{
+                                padding: 12,
+                                borderRadius: 10,
+                                background: '#ffffff',
+                                border: '1px solid var(--border-default)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between'
@@ -898,11 +920,11 @@ export default function CatalogPage() {
                 {/* 5. SQL Query Results Tab */}
                 {activeTab === 'query_results' && queryResult && (
                   <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, flex: 1 }}>
-                    <div style={{ padding: '10px 16px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ padding: '10px 16px', background: '#ffffff', borderBottom: '1px solid var(--border-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         SQL Query execution output
                       </span>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: 9999, background: '#000000', color: '#ffffff' }}>
                         {queryResult.rows.length} rows returned
                       </span>
                     </div>
@@ -910,7 +932,7 @@ export default function CatalogPage() {
                     <div style={{ overflow: 'auto', flex: 1, minHeight: 0 }}>
                       <table className="table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
                         <thead>
-                          <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'rgba(255,255,255,0.01)', position: 'sticky', top: 0, zIndex: 1 }}>
+                          <tr style={{ borderBottom: '1px solid var(--border-default)', background: 'var(--bg-elevated)', position: 'sticky', top: 0, zIndex: 1 }}>
                             {queryResult.columns.map(col => (
                               <th key={col} style={{ padding: '10px 14px', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', background: 'var(--bg-elevated)' }}>
                                 {col}
@@ -930,8 +952,8 @@ export default function CatalogPage() {
                                     ) : typeof val === 'boolean' ? (
                                       <span style={{
                                         fontSize: '0.62rem', fontWeight: 700, padding: '2px 6px', borderRadius: 4,
-                                        background: val ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                                        color: val ? '#10b981' : '#ef4444'
+                                        background: val ? '#000000' : 'var(--bg-elevated)',
+                                        color: val ? '#ffffff' : 'var(--text-muted)'
                                       }}>
                                         {val.toString().toUpperCase()}
                                       </span>
@@ -963,10 +985,10 @@ export default function CatalogPage() {
             style={{ 
               flex: '0 0 260px', 
               minHeight: 0,
-              background: 'var(--bg-elevated)', 
-              border: '1px solid var(--border-default)', 
-              borderRadius: 16, 
-              padding: 16, 
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 12,
+              padding: 16,
               display: 'flex', 
               flexDirection: 'column', 
               gap: 12
@@ -1002,11 +1024,11 @@ export default function CatalogPage() {
                     }}
                     style={{
                       height: 24,
-                      padding: '0 6px',
+                      padding: '0 10px',
                       fontSize: '0.72rem',
-                      background: 'rgba(255,255,255,0.05)',
+                      background: '#ffffff',
                       border: '1px solid var(--border-default)',
-                      borderRadius: 6,
+                      borderRadius: 9999,
                       color: 'var(--text-primary)',
                       outline: 'none',
                       cursor: 'pointer'
@@ -1047,13 +1069,13 @@ export default function CatalogPage() {
                 style={{
                   width: '100%',
                   height: '100%',
-                  background: 'rgba(0,0,0,0.15)',
-                  border: '1px solid var(--border-default)',
+                  background: '#000000',
+                  border: '1px solid #000000',
                   borderRadius: 8,
                   padding: 10,
-                  fontFamily: 'monospace',
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: '0.8rem',
-                  color: 'var(--text-primary)',
+                  color: '#ffffff',
                   resize: 'none',
                   outline: 'none'
                 }}
@@ -1074,8 +1096,8 @@ export default function CatalogPage() {
                     background: 'var(--brand-primary)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: 8,
-                    padding: '6px 14px',
+                    borderRadius: 9999,
+                    padding: '6px 16px',
                     fontSize: '0.8rem',
                     fontWeight: 600,
                     display: 'flex',
@@ -1098,7 +1120,7 @@ export default function CatalogPage() {
 
             {/* Error messaging */}
             {queryError && (
-              <div style={{ color: 'var(--status-error)', fontSize: '0.75rem', background: 'rgba(239,68,68,0.06)', padding: '6px 10px', borderRadius: 6, border: '1px solid rgba(239,68,68,0.12)' }}>
+              <div style={{ color: 'var(--status-error)', fontSize: '0.75rem', background: 'var(--status-error-bg)', padding: '6px 10px', borderRadius: 6, border: '1px solid var(--status-error)' }}>
                 {queryError}
               </div>
             )}

@@ -202,7 +202,7 @@ export const PROVIDER_COLORS: Record<string, string> = {
   redis: '#dc382d',
   sqlite: '#003b57',
   oracle: '#f80000',
-  default: '#6366f1',
+  default: '#6b7280', // neutral gray — no brand identified
 };
 
 export const PROVIDER_LABELS: Record<string, string> = {

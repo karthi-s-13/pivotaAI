@@ -29,7 +29,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, borderBottom: '1px solid #e5e7eb', paddingBottom: 1 }}>
+      <div style={{ display: 'flex', gap: 8, borderBottom: '1px solid var(--border-default)', paddingBottom: 1 }}>
         <button
           onClick={() => setActiveTab('profile')}
           style={{
@@ -42,8 +42,8 @@ export default function SettingsPage() {
             fontSize: '0.85rem',
             fontWeight: 600,
             cursor: 'pointer',
-            color: activeTab === 'profile' ? '#000000' : '#6b7280',
-            borderBottom: activeTab === 'profile' ? '2px solid #000000' : '2px solid transparent',
+            color: activeTab === 'profile' ? 'var(--text-primary)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'profile' ? '2px solid var(--brand-primary)' : '2px solid transparent',
             transition: 'all 0.2s',
           }}
         >
@@ -63,8 +63,8 @@ export default function SettingsPage() {
               fontSize: '0.85rem',
               fontWeight: 600,
               cursor: 'pointer',
-              color: activeTab === 'iam' ? '#000000' : '#6b7280',
-              borderBottom: activeTab === 'iam' ? '2px solid #000000' : '2px solid transparent',
+              color: activeTab === 'iam' ? 'var(--text-primary)' : 'var(--text-muted)',
+              borderBottom: activeTab === 'iam' ? '2px solid var(--brand-primary)' : '2px solid transparent',
               transition: 'all 0.2s',
             }}
           >
@@ -76,13 +76,13 @@ export default function SettingsPage() {
       {/* Tab Content */}
       <div style={{ marginTop: 8 }}>
         {activeTab === 'profile' && (
-          <div style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 32, background: '#ffffff', textAlign: 'center' }}>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f3f4f6', display: 'inline-flex', alignItems: 'center', justifyCenter: 'center', marginBottom: 16 }}>
-              <UserIcon size={28} style={{ color: '#9ca3af', margin: 'auto' }} />
+          <div style={{ border: '1px solid var(--border-default)', borderRadius: 8, padding: 32, background: 'var(--bg-surface)', textAlign: 'center' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--bg-elevated)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <UserIcon size={28} style={{ color: 'var(--text-disabled)' }} />
             </div>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 6 }}>{user?.full_name}</h2>
-            <p style={{ color: '#4b5563', fontSize: '0.85rem', marginBottom: 4 }}>{user?.email}</p>
-            <span style={{ background: '#f3f4f6', color: '#1f2937', padding: '2px 10px', borderRadius: 9999, fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: 4 }}>{user?.email}</p>
+            <span style={{ background: 'var(--bg-elevated)', color: 'var(--text-primary)', padding: '3px 12px', borderRadius: 9999, fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', border: '1px solid var(--border-default)' }}>
               {user?.role === 'iam' ? 'IAM User' : 'Admin'}
             </span>
           </div>

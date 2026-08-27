@@ -15,8 +15,6 @@ interface MetricCardProps {
   label: string;
   subtitle: string;
   trend?: string;
-  color: string;
-  bgColor: string;
   navigateTo: string;
   delay?: number;
 }
@@ -27,8 +25,6 @@ export default function MetricCard({
   label,
   subtitle,
   trend,
-  color,
-  bgColor,
   navigateTo,
   delay = 0,
 }: MetricCardProps) {
@@ -48,7 +44,7 @@ export default function MetricCard({
       style={{ animationDelay: `${delay}s`, opacity: 0 }}
     >
       <div className="metric-card__header">
-        <div className="metric-card__icon" style={{ background: bgColor, color }}>
+        <div className="metric-card__icon">
           {icon}
         </div>
         {trend && (

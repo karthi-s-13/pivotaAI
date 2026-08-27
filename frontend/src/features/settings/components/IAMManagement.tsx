@@ -8,9 +8,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Shield, Plus, Mail, Trash2, Send, CheckCircle, RefreshCw, Loader2 } from 'lucide-react';
+import { Shield, Plus, Trash2, Send, CheckCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { authApi } from '../../auth/api/authApi';
 import type { IAMUser, IAMPolicy } from '../../auth/api/authApi';
+import './iam.css';
 
 export default function IAMManagement() {
   const [users, setUsers] = useState<IAMUser[]>([]);
@@ -25,12 +26,14 @@ export default function IAMManagement() {
   const [policyId, setPolicyId] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Status mapping colors
+  // Status mapping — mapped onto the shared semantic status tokens:
+  // INVITED = pending action (warning), FIRST_LOGIN = neutral in-progress state (info/black),
+  // PASSWORD_CHANGE_REQUIRED = blocking, must resolve before use (error), ACTIVE = healthy (success)
   const statusColors: Record<string, { bg: string; text: string }> = {
-    INVITED: { bg: 'rgba(245,158,11,0.1)', text: '#f59e0b' },
-    FIRST_LOGIN: { bg: 'rgba(59,130,246,0.1)', text: '#3b82f6' },
-    PASSWORD_CHANGE_REQUIRED: { bg: 'rgba(239,68,68,0.1)', text: '#ef4444' },
-    ACTIVE: { bg: 'rgba(34,197,94,0.1)', text: '#22c55e' },
+    INVITED: { bg: 'var(--status-warning-bg)', text: 'var(--status-warning)' },
+    FIRST_LOGIN: { bg: 'var(--status-info-bg)', text: 'var(--status-info)' },
+    PASSWORD_CHANGE_REQUIRED: { bg: 'var(--status-error-bg)', text: 'var(--status-error)' },
+    ACTIVE: { bg: 'var(--status-success-bg)', text: 'var(--status-success)' },
   };
 
   useEffect(() => {
@@ -119,7 +122,7 @@ export default function IAMManagement() {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-        <Loader2 size={32} className="animate-spin" style={{ color: '#000' }} />
+        <Loader2 size={32} className="animate-spin" style={{ color: 'var(--brand-primary)' }} />
       </div>
     );
   }
@@ -128,12 +131,12 @@ export default function IAMManagement() {
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       {/* Alert notifications */}
       {error && (
-        <div style={{ background: '#fef2f2', border: '1px solid #ef4444', color: '#ef4444', padding: '12px 18px', borderRadius: 8, fontSize: '0.85rem' }}>
+        <div style={{ background: 'var(--status-error-bg)', border: '1px solid var(--status-error)', color: 'var(--status-error)', padding: '12px 20px', borderRadius: 9999, fontSize: '0.85rem' }}>
           {error}
         </div>
       )}
       {success && (
-        <div style={{ background: '#f0fdf4', border: '1px solid #22c55e', color: '#15803d', padding: '12px 18px', borderRadius: 8, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ background: 'var(--status-success-bg)', border: '1px solid var(--status-success)', color: 'var(--status-success)', padding: '12px 20px', borderRadius: 9999, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 8 }}>
           <CheckCircle size={16} /> {success}
         </div>
       )}
@@ -141,39 +144,39 @@ export default function IAMManagement() {
       {/* Grid: Create User Form + Policy list */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* Create User Card */}
-        <div style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 24, background: '#ffffff' }}>
+        <div style={{ border: '1px solid var(--border-default)', borderRadius: 8, padding: 24, background: 'var(--bg-surface)' }}>
           <h2 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Plus size={18} /> Create IAM User Account
           </h2>
           <form onSubmit={handleCreateUser} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#4b5563', marginBottom: 4 }}>Full Name</label>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Full Name</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="John Doe"
                 required
-                style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.85rem', outline: 'none' }}
+                className="input-field"
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#4b5563', marginBottom: 4 }}>Gmail Address</label>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Gmail Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="employee@gmail.com"
                 required
-                style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.85rem', outline: 'none' }}
+                className="input-field"
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#4b5563', marginBottom: 4 }}>Access Policy</label>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Access Policy</label>
               <select
                 value={policyId}
                 onChange={(e) => setPolicyId(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: '0.85rem', outline: 'none', background: '#fff' }}
+                className="input-field"
               >
                 {policies.map((p) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -184,7 +187,7 @@ export default function IAMManagement() {
               type="submit"
               disabled={submitting}
               className="btn-primary"
-              style={{ padding: '10px 20px', fontSize: '0.82rem', borderRadius: 6, width: 'fit-content', marginTop: 6 }}
+              style={{ padding: '10px 20px', fontSize: '0.82rem', width: 'fit-content', marginTop: 6 }}
             >
               {submitting ? 'Creating...' : 'Create Account'}
             </button>
@@ -192,18 +195,18 @@ export default function IAMManagement() {
         </div>
 
         {/* Info Box / Policies List */}
-        <div style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 24, background: '#f9fafb' }}>
+        <div style={{ border: '1px solid var(--border-default)', borderRadius: 8, padding: 24, background: 'var(--bg-elevated)' }}>
           <h2 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Shield size={18} /> Active Policies & Permissions
           </h2>
-          <p style={{ fontSize: '0.78rem', color: '#6b7280', marginBottom: 16 }}>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 16 }}>
             Access Policies define what resources and catalog items can be viewed or edited.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {policies.map((p) => (
-              <div key={p.id} style={{ borderBottom: '1px solid #e5e7eb', paddingBottom: 10 }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#111827' }}>{p.name}</span>
-                <p style={{ fontSize: '0.75rem', color: '#4b5563', marginTop: 2 }}>{p.description}</p>
+              <div key={p.id} style={{ borderBottom: '1px solid var(--border-default)', paddingBottom: 10 }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>{p.name}</span>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 2 }}>{p.description}</p>
               </div>
             ))}
           </div>
@@ -211,60 +214,55 @@ export default function IAMManagement() {
       </div>
 
       {/* IAM User Accounts Table */}
-      <div style={{ border: '1px solid #e0e0e0', borderRadius: 8, background: '#ffffff', overflow: 'hidden' }}>
-        <div style={{ padding: '18px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="iam-table-wrap">
+        <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>IAM User Accounts</h3>
-          <button onClick={fetchData} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem', borderRadius: 6 }}>
+          <button onClick={fetchData} className="btn-ghost" style={{ padding: '6px 16px', fontSize: '0.75rem' }}>
             <RefreshCw size={12} /> Refresh
           </button>
         </div>
-        
+
         {users.length === 0 ? (
-          <div style={{ padding: '40px 0', textAlign: 'center', color: '#6b7280', fontSize: '0.85rem' }}>
+          <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
             No IAM User accounts found. Use the form above to invite employees.
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
+          <table className="iam-table">
             <thead>
-              <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb', color: '#374151' }}>
-                <th style={{ padding: '12px 24px', fontWeight: 600 }}>Employee</th>
-                <th style={{ padding: '12px 24px', fontWeight: 600 }}>IAM User ID</th>
-                <th style={{ padding: '12px 24px', fontWeight: 600 }}>Gmail</th>
-                <th style={{ padding: '12px 24px', fontWeight: 600 }}>Policy</th>
-                <th style={{ padding: '12px 24px', fontWeight: 600 }}>Status</th>
-                <th style={{ padding: '12px 24px', fontWeight: 600, textAlign: 'right' }}>Actions</th>
+              <tr>
+                <th>Employee</th>
+                <th>IAM User ID</th>
+                <th>Gmail</th>
+                <th>Policy</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((u) => {
-                const status = statusColors[u.status] || { bg: '#eee', text: '#666' };
+                const status = statusColors[u.status] || { bg: 'var(--bg-elevated)', text: 'var(--text-muted)' };
                 return (
-                  <tr key={u.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                    <td style={{ padding: '14px 24px', fontWeight: 600, color: '#111827' }}>{u.full_name}</td>
-                    <td style={{ padding: '14px 24px', fontFamily: 'monospace' }}>{u.iam_id}</td>
-                    <td style={{ padding: '14px 24px', color: '#4b5563' }}>{u.email}</td>
-                    <td style={{ padding: '14px 24px' }}>
-                      <span style={{ background: '#f3f4f6', color: '#1f2937', padding: '2px 8px', borderRadius: 9999, fontSize: '0.72rem', fontWeight: 500 }}>
+                  <tr key={u.id}>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{u.full_name}</td>
+                    <td className="mono" style={{ color: 'var(--text-secondary)' }}>{u.iam_id}</td>
+                    <td style={{ color: 'var(--text-secondary)' }}>{u.email}</td>
+                    <td>
+                      <span style={{ background: 'var(--bg-elevated)', color: 'var(--text-primary)', padding: '3px 12px', borderRadius: 9999, fontSize: '0.72rem', fontWeight: 500, border: '1px solid var(--border-default)' }}>
                         {u.policy_name}
                       </span>
                     </td>
-                    <td style={{ padding: '14px 24px' }}>
-                      <span style={{ background: status.bg, color: status.text, padding: '2px 8px', borderRadius: 9999, fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+                    <td>
+                      <span style={{ background: status.bg, color: status.text, padding: '3px 12px', borderRadius: 9999, fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.02em', border: `1px solid ${status.text}` }}>
                         {u.status}
                       </span>
                     </td>
-                    <td style={{ padding: '14px 24px', textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'inline-flex', gap: 8 }}>
                         <button
                           onClick={() => handleSendDetails(u.id)}
                           title="Send access credentials email invitation"
-                          style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '6px 12px',
-                            background: '#000000', color: '#ffffff', border: 'none', borderRadius: 6,
-                            cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, transition: 'opacity 0.2s'
-                          }}
-                          onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; }}
-                          onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                          className="btn-primary"
+                          style={{ padding: '6px 16px', fontSize: '0.75rem', gap: 4 }}
                         >
                           <Send size={12} /> Send Details
                         </button>
@@ -272,9 +270,9 @@ export default function IAMManagement() {
                           onClick={() => handleDeleteUser(u.id)}
                           title="Delete employee access account"
                           style={{
-                            display: 'inline-flex', alignItems: 'center', padding: '6px',
-                            background: '#fef2f2', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)',
-                            borderRadius: 6, cursor: 'pointer'
+                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 10px',
+                            background: 'var(--status-error-bg)', color: 'var(--status-error)', border: '1px solid var(--status-error)',
+                            borderRadius: 9999, cursor: 'pointer'
                           }}
                         >
                           <Trash2 size={14} />

@@ -2,6 +2,9 @@
  * Table Node — Represents a table, view, or collection.
  * Displays column count, type badge, and relationship indicator.
  * When expanded, shows inline column chips.
+ *
+ * Object type (TABLE / VIEW / COLLECTION / MAT VIEW) is differentiated
+ * by its badge label only — no color-coding.
  */
 
 import React from 'react';
@@ -41,15 +44,6 @@ const BASE_H = 62;
 const COL_ROW_H = 20;
 const MAX_COLS_INLINE = 8;
 
-function getTypeColor(type: string): string {
-  switch (type.toUpperCase()) {
-    case 'VIEW': return '#8b5cf6';
-    case 'MATERIALIZED_VIEW': return '#a78bfa';
-    case 'COLLECTION': return '#10b981';
-    default: return '#6366f1';
-  }
-}
-
 function getTypeLabel(type: string): string {
   switch (type.toUpperCase()) {
     case 'VIEW': return 'VIEW';
@@ -85,7 +79,6 @@ export const TableNode = React.memo(function TableNode({
   onDoubleClick,
   onContextMenu,
 }: TableNodeProps) {
-  const typeColor = getTypeColor(metadata.type);
   const typeLabel = getTypeLabel(metadata.type);
   const isLoading = status === 'loading';
 
@@ -102,13 +95,9 @@ export const TableNode = React.memo(function TableNode({
   const px = x - BASE_W / 2;
   const py = y - cardH / 2;
 
-  const borderColor = selected
-    ? '#818cf8'
-    : highlighted
-    ? `${typeColor}70`
-    : 'rgba(148,163,184,0.1)';
+  const borderColor = selected ? '#000000' : highlighted ? '#111827' : '#d1d5db';
 
-  const opacity = highlighted ? 1 : 0.92;
+  const opacity = highlighted ? 1 : 0.95;
 
   // Relationship indicators
   const hasRelationships =
@@ -123,63 +112,53 @@ export const TableNode = React.memo(function TableNode({
       onDoubleClick={onDoubleClick}
       onContextMenu={onContextMenu}
     >
-      {/* Shadow */}
-      <rect width={BASE_W} height={cardH} rx={10} fill="rgba(0,0,0,0.3)" transform="translate(1.5,2.5)" />
-
       {/* Background */}
       <rect
         width={BASE_W}
         height={cardH}
         rx={10}
-        fill="#0d1526"
+        fill="#ffffff"
         stroke={borderColor}
         strokeWidth={selected ? 2 : 1.2}
-        style={{
-          filter: selected
-            ? `drop-shadow(0 0 10px rgba(99,102,241,0.2))`
-            : highlighted
-            ? `drop-shadow(0 0 6px ${typeColor}30)`
-            : 'none',
-          transition: 'stroke 0.2s, filter 0.2s',
-        }}
+        style={{ transition: 'stroke 0.2s' }}
       />
 
       {/* Header accent */}
-      <rect width={BASE_W} height={4} rx={2} fill={typeColor} opacity={0.85} style={{ pointerEvents: 'none' }} />
+      <rect width={BASE_W} height={4} rx={2} fill="#111827" style={{ pointerEvents: 'none' }} />
 
-      {/* Table grid icon */}
+      {/* Table grid icon (monochrome) */}
       <g transform="translate(10, 16)" style={{ pointerEvents: 'none' }}>
-        <rect width={20} height={18} rx={2} fill={`${typeColor}18`} stroke={`${typeColor}40`} strokeWidth={1} />
+        <rect width={20} height={18} rx={2} fill="#f3f4f6" stroke="#9ca3af" strokeWidth={1} />
         {/* Grid lines */}
-        <line x1={0} y1={6} x2={20} y2={6} stroke={`${typeColor}30`} strokeWidth={0.7} />
-        <line x1={0} y1={12} x2={20} y2={12} stroke={`${typeColor}30`} strokeWidth={0.7} />
-        <line x1={7} y1={0} x2={7} y2={18} stroke={`${typeColor}30`} strokeWidth={0.7} />
+        <line x1={0} y1={6} x2={20} y2={6} stroke="#d1d5db" strokeWidth={0.7} />
+        <line x1={0} y1={12} x2={20} y2={12} stroke="#d1d5db" strokeWidth={0.7} />
+        <line x1={7} y1={0} x2={7} y2={18} stroke="#d1d5db" strokeWidth={0.7} />
       </g>
 
       {/* Table name */}
       <text
         x={38}
         y={24}
-        fill="#f1f5f9"
+        fill="#111827"
         fontSize="11"
         fontWeight="700"
-        fontFamily="Inter, sans-serif"
+        fontFamily="'Open Sans', sans-serif"
         style={{ pointerEvents: 'none' }}
       >
         {label.length > 14 ? label.slice(0, 13) + '…' : label}
       </text>
 
-      {/* Type badge */}
+      {/* Type badge — differentiated by label text, not color */}
       <g transform="translate(38, 30)" style={{ pointerEvents: 'none' }}>
-        <rect width={typeLabel.length * 5.5 + 6} height={13} rx={3} fill={`${typeColor}20`} />
+        <rect width={typeLabel.length * 5.5 + 6} height={13} rx={3} fill="#f3f4f6" />
         <text
           x={(typeLabel.length * 5.5 + 6) / 2}
           y={9.5}
           textAnchor="middle"
-          fill={typeColor}
+          fill="#374151"
           fontSize="7"
           fontWeight="800"
-          fontFamily="Inter, sans-serif"
+          fontFamily="'Open Sans', sans-serif"
           letterSpacing="0.5"
         >
           {typeLabel}
@@ -192,23 +171,23 @@ export const TableNode = React.memo(function TableNode({
           x={BASE_W - 10}
           y={24}
           textAnchor="end"
-          fill="rgba(148,163,184,0.5)"
+          fill="#9ca3af"
           fontSize="8"
-          fontFamily="Inter, sans-serif"
+          fontFamily="'Open Sans', sans-serif"
           style={{ pointerEvents: 'none' }}
         >
           {metadata.column_count} cols
         </text>
       )}
 
-      {/* Relationship dot */}
+      {/* Relationship indicator — monochrome dot */}
       {hasRelationships && (
         <circle
           cx={BASE_W - 10}
           cy={38}
           r={3.5}
-          fill="#10b981"
-          style={{ filter: 'drop-shadow(0 0 3px rgba(16,185,129,0.5))', pointerEvents: 'none' }}
+          fill="#111827"
+          style={{ pointerEvents: 'none' }}
         />
       )}
 
@@ -218,9 +197,9 @@ export const TableNode = React.memo(function TableNode({
           x={BASE_W - 16}
           y={38}
           textAnchor="end"
-          fill="rgba(148,163,184,0.4)"
+          fill="#9ca3af"
           fontSize="7.5"
-          fontFamily="Inter, sans-serif"
+          fontFamily="'Open Sans', sans-serif"
           style={{ pointerEvents: 'none' }}
         >
           {metadata.row_count_estimate >= 1000000
@@ -237,9 +216,9 @@ export const TableNode = React.memo(function TableNode({
           x={BASE_W / 2}
           y={BASE_H - 8}
           textAnchor="middle"
-          fill="rgba(99,102,241,0.6)"
+          fill="#6b7280"
           fontSize="7.5"
-          fontFamily="Inter, sans-serif"
+          fontFamily="'Open Sans', sans-serif"
           style={{ pointerEvents: 'none' }}
         >
           Loading columns…
@@ -257,9 +236,9 @@ export const TableNode = React.memo(function TableNode({
       >
         <rect x={-4} y={-4} width={20} height={20} fill="transparent" />
         {expanded ? (
-          <path d="M2,11 L6,5 L10,11" fill="none" stroke="rgba(148,163,184,0.55)" strokeWidth="1.3" />
+          <path d="M2,11 L6,5 L10,11" fill="none" stroke="#9ca3af" strokeWidth="1.3" />
         ) : (
-          <path d="M2,5 L6,11 L10,5" fill="none" stroke="rgba(148,163,184,0.55)" strokeWidth="1.3" />
+          <path d="M2,5 L6,11 L10,5" fill="none" stroke="#9ca3af" strokeWidth="1.3" />
         )}
       </g>
 
@@ -267,29 +246,30 @@ export const TableNode = React.memo(function TableNode({
       {showColumns && (
         <g transform={`translate(0, ${BASE_H})`} style={{ pointerEvents: 'none' }}>
           {/* Divider */}
-          <line x1={8} y1={0} x2={BASE_W - 8} y2={0} stroke="rgba(148,163,184,0.08)" strokeWidth={1} />
+          <line x1={8} y1={0} x2={BASE_W - 8} y2={0} stroke="#e5e7eb" strokeWidth={1} />
 
           {displayCols.map((col, idx) => (
             <g key={col.id} transform={`translate(0, ${idx * COL_ROW_H})`}>
               {/* Alternate row background */}
               {idx % 2 === 0 && (
-                <rect width={BASE_W} height={COL_ROW_H} fill="rgba(255,255,255,0.012)" />
+                <rect width={BASE_W} height={COL_ROW_H} fill="#fafafa" />
               )}
-              {/* PK icon */}
+              {/* PK indicator — filled dot */}
               {col.is_primary_key && (
-                <text x={8} y={14} fill="#f59e0b" fontSize="8" fontFamily="Inter, sans-serif">🔑</text>
+                <circle cx={11} cy={11} r={2.5} fill="#111827" />
               )}
+              {/* FK indicator — ring */}
               {col.is_foreign_key && !col.is_primary_key && (
-                <text x={8} y={14} fill="#10b981" fontSize="8" fontFamily="Inter, sans-serif">🔗</text>
+                <circle cx={11} cy={11} r={2.5} fill="none" stroke="#6b7280" strokeWidth={1.2} />
               )}
               {/* Column name */}
               <text
                 x={col.is_primary_key || col.is_foreign_key ? 22 : 10}
                 y={14}
-                fill={col.is_primary_key ? '#fcd34d' : '#94a3b8'}
+                fill={col.is_primary_key ? '#111827' : '#374151'}
                 fontSize="8.5"
                 fontWeight={col.is_primary_key ? '700' : '400'}
-                fontFamily="JetBrains Mono, monospace"
+                fontFamily="'JetBrains Mono', monospace"
               >
                 {col.name.length > 14 ? col.name.slice(0, 13) + '…' : col.name}
               </text>
@@ -298,16 +278,15 @@ export const TableNode = React.memo(function TableNode({
                 x={BASE_W - 8}
                 y={14}
                 textAnchor="end"
-                fill={typeColor}
+                fill="#9ca3af"
                 fontSize="7.5"
-                fontFamily="JetBrains Mono, monospace"
-                opacity={0.7}
+                fontFamily="'JetBrains Mono', monospace"
               >
                 {getDataTypeShort(col.data_type, col.native_type)}
               </text>
               {/* Nullable dot */}
               {col.nullable && (
-                <circle cx={BASE_W - 22} cy={10} r={2} fill="rgba(148,163,184,0.3)" />
+                <circle cx={BASE_W - 22} cy={10} r={2} fill="#d1d5db" />
               )}
             </g>
           ))}
@@ -318,9 +297,9 @@ export const TableNode = React.memo(function TableNode({
               x={BASE_W / 2}
               y={displayCols.length * COL_ROW_H + 13}
               textAnchor="middle"
-              fill="rgba(148,163,184,0.4)"
+              fill="#9ca3af"
               fontSize="7.5"
-              fontFamily="Inter, sans-serif"
+              fontFamily="'Open Sans', sans-serif"
             >
               +{extraCols} more columns
             </text>

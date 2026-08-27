@@ -51,10 +51,10 @@ export default function DataMapToolbar({
   }, [searchQuery, searchResults]);
 
   const typeIcon: Record<string, string> = {
-    database: '🗄️',
+    database: '▣',
     table: '▦',
     view: '◈',
-    column: '⊡',
+    column: '□',
     collection: '◉',
     default: '·',
   };
@@ -62,11 +62,9 @@ export default function DataMapToolbar({
   return (
     <div
       style={{
-        background: 'rgba(17,24,39,0.92)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: '1px solid rgba(148,163,184,0.1)',
-        borderRadius: 14,
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--glass-border)',
+        borderRadius: 12,
         padding: '10px 16px',
         display: 'flex',
         alignItems: 'center',
@@ -82,14 +80,15 @@ export default function DataMapToolbar({
           style={{
             width: 28,
             height: 28,
-            borderRadius: 8,
-            background: 'var(--brand-gradient)',
+            borderRadius: '50%',
+            background: '#000000',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            flexShrink: 0,
           }}
         >
-          <Map size={13} color="white" />
+          <Map size={13} color="#ffffff" />
         </div>
         <span
           style={{
@@ -97,10 +96,7 @@ export default function DataMapToolbar({
             fontWeight: 800,
             letterSpacing: 1,
             textTransform: 'uppercase',
-            background: 'var(--brand-gradient)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            color: 'var(--text-primary)',
           }}
         >
           Data Map
@@ -108,48 +104,32 @@ export default function DataMapToolbar({
       </div>
 
       {/* Divider */}
-      <div style={{ width: 1, height: 24, background: 'rgba(148,163,184,0.1)' }} />
+      <div style={{ width: 1, height: 24, background: 'var(--glass-border)', opacity: 0.15 }} />
 
       {/* Search */}
       <div style={{ position: 'relative', flex: 1, minWidth: 200, maxWidth: 360 }}>
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           {searchLoading ? (
-            <Loader2 size={14} style={{ position: 'absolute', left: 10, color: 'var(--brand-primary)', animation: 'spin 1s linear infinite' }} />
+            <Loader2 size={14} className="animate-spin" style={{ position: 'absolute', left: 12, color: 'var(--text-muted)' }} />
           ) : (
-            <Search size={14} style={{ position: 'absolute', left: 10, color: 'var(--text-muted)', pointerEvents: 'none' }} />
+            <Search size={14} style={{ position: 'absolute', left: 12, color: 'var(--text-muted)', pointerEvents: 'none' }} />
           )}
           <input
             ref={searchRef}
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             onFocus={() => setShowResults(searchResults.length > 0)}
+            onBlur={() => setTimeout(() => setShowResults(false), 200)}
             placeholder="Search providers, databases, tables, columns…"
-            style={{
-              width: '100%',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(148,163,184,0.1)',
-              borderRadius: 10,
-              padding: '7px 32px 7px 32px',
-              color: 'var(--text-primary)',
-              fontSize: '0.78rem',
-              fontFamily: 'Inter, sans-serif',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
-            onFocusCapture={(e) => {
-              (e.target as HTMLInputElement).style.borderColor = 'rgba(99,102,241,0.4)';
-            }}
-            onBlurCapture={(e) => {
-              (e.target as HTMLInputElement).style.borderColor = 'rgba(148,163,184,0.1)';
-              setTimeout(() => setShowResults(false), 200);
-            }}
+            className="input-field"
+            style={{ padding: '7px 32px 7px 34px', fontSize: '0.78rem' }}
           />
           {searchQuery && (
             <button
               onClick={() => { onSearch(''); setShowResults(false); }}
               style={{
                 position: 'absolute',
-                right: 8,
+                right: 10,
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -171,10 +151,9 @@ export default function DataMapToolbar({
               top: 'calc(100% + 6px)',
               left: 0,
               right: 0,
-              background: '#1a2235',
-              border: '1px solid rgba(148,163,184,0.12)',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--glass-border)',
               borderRadius: 12,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
               zIndex: 100,
               maxHeight: 280,
               overflowY: 'auto',
@@ -194,12 +173,12 @@ export default function DataMapToolbar({
                   alignItems: 'flex-start',
                   gap: 10,
                   textAlign: 'left',
-                  borderBottom: i < searchResults.length - 1 ? '1px solid rgba(148,163,184,0.05)' : 'none',
+                  borderBottom: i < searchResults.length - 1 ? '1px solid var(--bg-elevated)' : 'none',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(99,102,241,0.06)')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-elevated)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
               >
-                <span style={{ fontSize: '0.85rem', flexShrink: 0, marginTop: 1 }}>
+                <span style={{ fontSize: '0.85rem', flexShrink: 0, marginTop: 1, color: 'var(--text-muted)' }}>
                   {typeIcon[r.type] ?? typeIcon.default}
                 </span>
                 <div>
@@ -215,10 +194,10 @@ export default function DataMapToolbar({
                     marginLeft: 'auto',
                     fontSize: '0.6rem',
                     fontWeight: 700,
-                    padding: '1px 6px',
-                    borderRadius: 4,
-                    background: 'rgba(99,102,241,0.12)',
-                    color: 'var(--brand-primary)',
+                    padding: '1px 8px',
+                    borderRadius: 9999,
+                    background: 'var(--bg-elevated)',
+                    color: 'var(--text-secondary)',
                     textTransform: 'uppercase',
                     flexShrink: 0,
                   }}
@@ -232,7 +211,7 @@ export default function DataMapToolbar({
       </div>
 
       {/* Divider */}
-      <div style={{ width: 1, height: 24, background: 'rgba(148,163,184,0.1)' }} />
+      <div style={{ width: 1, height: 24, background: 'var(--glass-border)', opacity: 0.15 }} />
 
       {/* Icon controls */}
       <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
@@ -272,16 +251,16 @@ function ToolbarButton({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: active ? 'rgba(99,102,241,0.15)' : 'transparent',
-        border: active ? '1px solid rgba(99,102,241,0.35)' : '1px solid transparent',
-        borderRadius: 8,
+        background: active ? '#000000' : 'transparent',
+        border: active ? '1px solid #000000' : '1px solid transparent',
+        borderRadius: 9999,
         cursor: 'pointer',
-        color: active ? 'var(--brand-primary)' : 'var(--text-secondary)',
+        color: active ? '#ffffff' : 'var(--text-secondary)',
         transition: 'all 0.15s',
       }}
       onMouseEnter={(e) => {
         if (!active) {
-          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)';
+          (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-elevated)';
           (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary)';
         }
       }}

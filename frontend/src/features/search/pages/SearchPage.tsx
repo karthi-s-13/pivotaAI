@@ -82,14 +82,12 @@ export default function SearchPage() {
           value={query}
           onChange={e => setQuery(e.target.value)}
           className="input-field"
-          style={{ 
-            paddingLeft: 48, 
-            height: 52, 
-            fontSize: '1rem', 
-            borderRadius: 14, 
-            boxShadow: '0 4px 20px rgba(99,102,241,0.05)',
+          style={{
+            paddingLeft: 48,
+            height: 52,
+            fontSize: '1rem',
             border: query ? '1px solid var(--brand-primary)' : '1px solid var(--border-default)',
-            background: 'var(--bg-elevated)',
+            background: '#ffffff',
             color: 'var(--text-primary)',
           }}
         />
@@ -108,10 +106,10 @@ export default function SearchPage() {
             key={word}
             onClick={() => setQuery(word)}
             style={{
-              padding: '4px 10px',
-              borderRadius: 6,
+              padding: '4px 12px',
+              borderRadius: 9999,
               border: '1px solid var(--border-default)',
-              background: 'transparent',
+              background: '#ffffff',
               fontSize: '0.75rem',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
@@ -125,7 +123,7 @@ export default function SearchPage() {
       </div>
 
       {error && (
-        <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10, padding: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ background: 'var(--status-error-bg)', border: '1px solid var(--status-error)', borderRadius: 10, padding: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
           <AlertCircle size={16} style={{ color: 'var(--status-error)' }} />
           <span style={{ fontSize: '0.8rem', color: 'var(--status-error)' }}>{error}</span>
         </div>
@@ -133,11 +131,11 @@ export default function SearchPage() {
 
       {/* Search results container */}
       {query.trim() === '' ? (
-        <div 
-          style={{ 
-            background: 'var(--bg-elevated)', 
-            border: '1px solid var(--border-default)', 
-            borderRadius: 14, 
+        <div
+          style={{
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 12,
             padding: 24,
             display: 'flex',
             gap: 16,
@@ -203,36 +201,36 @@ export default function SearchPage() {
                 />
               ))
             ) : filteredResults.length === 0 ? (
-              <div 
-                style={{ 
-                  textAlign: 'center', 
-                  padding: '48px 0', 
-                  color: 'var(--text-muted)', 
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '48px 0',
+                  color: 'var(--text-muted)',
                   fontSize: '0.85rem',
                   background: 'var(--bg-elevated)',
                   border: '1px dashed var(--border-default)',
-                  borderRadius: 14,
+                  borderRadius: 12,
                 }}
               >
                 No catalog matches found for "{query}".
               </div>
             ) : (
               filteredResults.map(item => {
-                // Type styling
-                const typeStyles: Record<string, { bg: string; color: string; icon: React.ReactNode }> = {
-                  database: { bg: 'rgba(245,158,11,0.08)', color: '#f59e0b', icon: <Database size={12} /> },
-                  table: { bg: 'rgba(99,102,241,0.08)', color: 'var(--brand-primary)', icon: <Table size={12} /> },
-                  view: { bg: 'rgba(139,92,246,0.08)', color: '#8b5cf6', icon: <Eye size={12} /> },
-                  column: { bg: 'rgba(16,185,129,0.08)', color: '#10b981', icon: <Columns size={12} /> }
+                // Type icon (differentiated by shape, not color — monochrome per the design system)
+                const typeIcons: Record<string, React.ReactNode> = {
+                  database: <Database size={12} />,
+                  table: <Table size={12} />,
+                  view: <Eye size={12} />,
+                  column: <Columns size={12} />,
                 };
-                const style = typeStyles[item.type] || { bg: 'var(--border-default)', color: 'var(--text-secondary)', icon: <Layers size={12} /> };
+                const icon = typeIcons[item.type] || <Layers size={12} />;
 
                 return (
                   <div
                     key={item.id + '_' + item.type + '_' + item.name}
                     onClick={() => handleItemClick(item)}
                     style={{
-                      background: 'var(--bg-elevated)',
+                      background: '#ffffff',
                       border: '1px solid var(--border-default)',
                       borderRadius: 12,
                       padding: 16,
@@ -245,34 +243,34 @@ export default function SearchPage() {
                     className="hover-card"
                   >
                     <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                      <div 
-                        style={{ 
-                          width: 32, 
-                          height: 32, 
-                          borderRadius: 8, 
-                          background: style.bg, 
-                          color: style.color, 
-                          display: 'flex', 
-                          alignItems: 'center', 
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: 8,
+                          background: 'var(--bg-elevated)',
+                          color: 'var(--text-primary)',
+                          display: 'flex',
+                          alignItems: 'center',
                           justifyContent: 'center',
                           marginTop: 2,
                           flexShrink: 0
                         }}
                       >
-                        {style.icon}
+                        {icon}
                       </div>
                       <div>
                         <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 4 }}>
                           <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{item.name}</span>
-                          <span 
-                            style={{ 
-                              fontSize: '0.62rem', 
-                              fontWeight: 700, 
-                              textTransform: 'uppercase', 
-                              padding: '1px 6px', 
-                              borderRadius: 4, 
-                              background: style.bg, 
-                              color: style.color 
+                          <span
+                            style={{
+                              fontSize: '0.62rem',
+                              fontWeight: 700,
+                              textTransform: 'uppercase',
+                              padding: '1px 8px',
+                              borderRadius: 9999,
+                              background: '#000000',
+                              color: '#ffffff'
                             }}
                           >
                             {item.type}

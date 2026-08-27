@@ -8,10 +8,11 @@ import { useState } from 'react';
 import {
   ArrowLeft, ArrowRight, Database, Check, X,
   Loader2, CheckCircle, XCircle, Wifi, Shield,
-  Server, Globe, Lock, RefreshCw, ShieldAlert,
+  Globe, Lock, RefreshCw, ShieldAlert,
 } from 'lucide-react';
 import { dataSourceApi } from '../api/dataSourceApi';
 import type { CreateDataSourceRequest, ConnectionTestResult } from '../api/dataSourceApi';
+import { getProviderColor } from '../../data-map/types/dataMap.types';
 
 interface Props {
   onClose: () => void;
@@ -234,13 +235,13 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                 alignItems: 'center',
                 gap: 6,
                 padding: '6px 14px',
-                borderRadius: 20,
-                border: 'none',
+                borderRadius: 9999,
+                border: i === stepIndex ? '1px solid var(--border-default)' : '1px solid transparent',
                 fontSize: '0.78rem',
                 fontWeight: i === stepIndex ? 600 : 400,
                 cursor: i <= stepIndex ? 'pointer' : 'default',
-                background: i === stepIndex ? 'rgba(99,102,241,0.15)' : i < stepIndex ? 'rgba(16,185,129,0.1)' : 'var(--bg-elevated)',
-                color: i === stepIndex ? 'var(--brand-primary-light)' : i < stepIndex ? 'var(--status-success)' : 'var(--text-disabled)',
+                background: i === stepIndex ? '#000000' : i < stepIndex ? 'var(--bg-elevated)' : 'transparent',
+                color: i === stepIndex ? '#ffffff' : i < stepIndex ? 'var(--text-primary)' : 'var(--text-disabled)',
                 transition: 'all var(--transition-fast)',
               }}
             >
@@ -248,14 +249,22 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
               {s.label}
             </button>
             {i < STEPS.length - 1 && (
-              <div style={{ width: 20, height: 1, background: i < stepIndex ? 'var(--status-success)' : 'var(--border-default)' }} />
+              <div style={{ width: 20, height: 1, background: i < stepIndex ? 'var(--text-disabled)' : 'var(--border-default)' }} />
             )}
           </div>
         ))}
       </div>
 
       {/* Step Content */}
-      <div className="glass-card" style={{ padding: '28px', marginBottom: 24 }}>
+      <div
+        style={{
+          background: '#ffffff',
+          border: '1px solid var(--border-default)',
+          borderRadius: 12,
+          padding: '28px',
+          marginBottom: 24,
+        }}
+      >
         {/* Step 1: Provider */}
         {step === 'provider' && (
           <div>
@@ -269,16 +278,16 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                 onClick={() => { update('provider_type', 'postgresql'); update('port', 5432); }}
                 style={{
                   padding: '24px',
-                  borderRadius: 14,
+                  borderRadius: 12,
                   border: form.provider_type === 'postgresql' ? '2px solid var(--brand-primary)' : '1px solid var(--border-default)',
-                  background: form.provider_type === 'postgresql' ? 'rgba(99,102,241,0.08)' : 'var(--bg-elevated)',
+                  background: '#ffffff',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all var(--transition-fast)',
                 }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                  <Database size={24} style={{ color: '#6366f1' }} />
+                <div style={{ width: 48, height: 48, borderRadius: 10, background: `${getProviderColor('postgresql')}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <Database size={24} style={{ color: getProviderColor('postgresql') }} />
                 </div>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>PostgreSQL</h3>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Local PostgreSQL database</p>
@@ -290,16 +299,16 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                 onClick={() => { update('provider_type', 'mysql'); update('port', 3306); update('use_connection_string', false); }}
                 style={{
                   padding: '24px',
-                  borderRadius: 14,
+                  borderRadius: 12,
                   border: form.provider_type === 'mysql' ? '2px solid var(--brand-primary)' : '1px solid var(--border-default)',
-                  background: form.provider_type === 'mysql' ? 'rgba(99,102,241,0.08)' : 'var(--bg-elevated)',
+                  background: '#ffffff',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all var(--transition-fast)',
                 }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(139,92,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                  <Database size={24} style={{ color: '#8b5cf6' }} />
+                <div style={{ width: 48, height: 48, borderRadius: 10, background: `${getProviderColor('mysql')}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <Database size={24} style={{ color: getProviderColor('mysql') }} />
                 </div>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>MySQL</h3>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Local or Remote MySQL database</p>
@@ -311,16 +320,16 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                 onClick={() => { update('provider_type', 'sqlserver'); update('port', 1433); update('use_connection_string', false); }}
                 style={{
                   padding: '24px',
-                  borderRadius: 14,
+                  borderRadius: 12,
                   border: form.provider_type === 'sqlserver' ? '2px solid var(--brand-primary)' : '1px solid var(--border-default)',
-                  background: form.provider_type === 'sqlserver' ? 'rgba(99,102,241,0.08)' : 'var(--bg-elevated)',
+                  background: '#ffffff',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all var(--transition-fast)',
                 }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(59,130,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                  <Database size={24} style={{ color: '#3b82f6' }} />
+                <div style={{ width: 48, height: 48, borderRadius: 10, background: `${getProviderColor('sqlserver')}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <Database size={24} style={{ color: getProviderColor('sqlserver') }} />
                 </div>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>SQL Server</h3>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Enterprise Microsoft SQL Server</p>
@@ -337,16 +346,16 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                 }}
                 style={{
                   padding: '24px',
-                  borderRadius: 14,
-                  border: form.provider_type === 'mongodb' ? '2px solid var(--status-success)' : '1px solid var(--border-default)',
-                  background: form.provider_type === 'mongodb' ? 'rgba(16,185,129,0.08)' : 'var(--bg-elevated)',
+                  borderRadius: 12,
+                  border: form.provider_type === 'mongodb' ? '2px solid var(--brand-primary)' : '1px solid var(--border-default)',
+                  background: '#ffffff',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all var(--transition-fast)',
                 }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                  <Globe size={24} style={{ color: '#10b981' }} />
+                <div style={{ width: 48, height: 48, borderRadius: 10, background: `${getProviderColor('mongodb')}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <Globe size={24} style={{ color: getProviderColor('mongodb') }} />
                 </div>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>MongoDB</h3>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>MongoDB self-hosted or Atlas cloud</p>
@@ -363,10 +372,10 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                           if (dep === 'atlas') update('ssl_enabled', true);
                         }}
                         style={{
-                          padding: '4px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: '0.72rem',
+                          padding: '4px 12px', borderRadius: 9999, border: 'none', cursor: 'pointer', fontSize: '0.72rem',
                           fontWeight: form.deployment === dep ? 600 : 400,
-                          background: form.deployment === dep ? 'rgba(16,185,129,0.25)' : 'rgba(255,255,255,0.08)',
-                          color: form.deployment === dep ? 'var(--status-success)' : 'var(--text-muted)',
+                          background: form.deployment === dep ? '#000000' : 'var(--bg-elevated)',
+                          color: form.deployment === dep ? '#ffffff' : 'var(--text-muted)',
                         }}
                       >
                         {dep === 'atlas' ? '☁ Atlas' : '🖥 Self-hosted'}
@@ -392,16 +401,16 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                 }}
                 style={{
                   padding: '24px',
-                  borderRadius: 14,
+                  borderRadius: 12,
                   border: form.provider_type === 'supabase' ? '2px solid var(--brand-primary)' : '1px solid var(--border-default)',
-                  background: form.provider_type === 'supabase' ? 'rgba(99,102,241,0.08)' : 'var(--bg-elevated)',
+                  background: '#ffffff',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all var(--transition-fast)',
                 }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                  <Database size={24} style={{ color: '#6366f1' }} />
+                <div style={{ width: 48, height: 48, borderRadius: 10, background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <Database size={24} style={{ color: 'var(--text-primary)' }} />
                 </div>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>Supabase</h3>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Managed cloud PostgreSQL database</p>
@@ -468,9 +477,9 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                         type="button"
                         onClick={() => { update('supabase_method', 'project'); update('host', ''); }}
                         style={{
-                          flex: 1, padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: '0.8rem', border: '1px solid var(--border-default)',
-                          background: form.supabase_method === 'project' ? 'rgba(99,102,241,0.15)' : 'var(--bg-elevated)',
-                          color: form.supabase_method === 'project' ? 'var(--brand-primary-light)' : 'var(--text-secondary)',
+                          flex: 1, padding: '8px 16px', borderRadius: 9999, cursor: 'pointer', fontSize: '0.8rem', border: '1px solid var(--border-default)',
+                          background: form.supabase_method === 'project' ? '#000000' : '#ffffff',
+                          color: form.supabase_method === 'project' ? '#ffffff' : 'var(--text-secondary)',
                           fontWeight: form.supabase_method === 'project' ? 600 : 400,
                         }}
                       >
@@ -480,9 +489,9 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                         type="button"
                         onClick={() => { update('supabase_method', 'direct'); }}
                         style={{
-                          flex: 1, padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: '0.8rem', border: '1px solid var(--border-default)',
-                          background: form.supabase_method === 'direct' ? 'rgba(99,102,241,0.15)' : 'var(--bg-elevated)',
-                          color: form.supabase_method === 'direct' ? 'var(--brand-primary-light)' : 'var(--text-secondary)',
+                          flex: 1, padding: '8px 16px', borderRadius: 9999, cursor: 'pointer', fontSize: '0.8rem', border: '1px solid var(--border-default)',
+                          background: form.supabase_method === 'direct' ? '#000000' : '#ffffff',
+                          color: form.supabase_method === 'direct' ? '#ffffff' : 'var(--text-secondary)',
                           fontWeight: form.supabase_method === 'direct' ? 600 : 400,
                         }}
                       >
@@ -611,9 +620,9 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                       key={env}
                       onClick={() => update('environment', env)}
                       style={{
-                        padding: '8px 18px', borderRadius: 8, border: 'none', cursor: 'pointer',
-                        background: form.environment === env ? 'rgba(99,102,241,0.15)' : 'var(--bg-elevated)',
-                        color: form.environment === env ? 'var(--brand-primary-light)' : 'var(--text-secondary)',
+                        padding: '8px 18px', borderRadius: 9999, border: '1px solid var(--border-default)', cursor: 'pointer',
+                        background: form.environment === env ? '#000000' : '#ffffff',
+                        color: form.environment === env ? '#ffffff' : 'var(--text-secondary)',
                         fontWeight: form.environment === env ? 600 : 400, fontSize: '0.8rem',
                         textTransform: 'capitalize', transition: 'all var(--transition-fast)',
                       }}
@@ -639,7 +648,7 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                 {form.provider_type === 'sqlserver' && (
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 6, fontWeight: 500 }}>Authentication Method</label>
-                    <select 
+                    <select
                       className="input-field"
                       value={form.authentication_method}
                       onChange={e => {
@@ -648,14 +657,6 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
                           update('username', '');
                           update('password', '');
                         }
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '10px 14px',
-                        borderRadius: 8,
-                        background: 'var(--bg-elevated)',
-                        border: '1px solid var(--border-default)',
-                        color: 'var(--text-primary)',
                       }}
                     >
                       <option value="sql_server">SQL Server Authentication</option>
@@ -827,7 +828,7 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
 
             {testing && (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Loader2 size={32} className="animate-spin-slow" style={{ color: 'var(--brand-primary)' }} />
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Connecting to database...</p>
@@ -906,7 +907,7 @@ export default function AddDataSourceWizard({ onClose, onSuccess }: Props) {
 
                   {/* Clean enterprise error troubleshooting */}
                   {!testResult.success && testResult.details && testResult.details.error_code && (
-                    <div style={{ marginTop: 10, padding: 14, background: 'rgba(239, 68, 68, 0.04)', border: '1px solid rgba(239, 68, 68, 0.12)', borderRadius: 10 }}>
+                    <div style={{ marginTop: 10, padding: 14, background: 'var(--status-error-bg)', border: '1px solid var(--status-error)', borderRadius: 10 }}>
                       <h4 style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--status-error)', marginBottom: 4 }}>
                         {testResult.details.error_title || 'Diagnostic Alert'} ({testResult.details.error_code})
                       </h4>

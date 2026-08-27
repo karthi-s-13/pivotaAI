@@ -9,13 +9,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Shield, ArrowRight, Loader2, ExternalLink, Compass, CheckCircle } from 'lucide-react';
+import { Shield, ArrowRight, Loader2, ExternalLink, CheckCircle } from 'lucide-react';
 import { authApi } from '../api/authApi';
 import { useAuthStore } from '../../../stores/authStore';
 
 export default function Verify2FAPage() {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,6 +25,12 @@ export default function Verify2FAPage() {
   useEffect(() => {
     if (!isAuthenticated) navigate('/login');
   }, [isAuthenticated, navigate]);
+
+  const handleBackToSignIn = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await logout();
+    navigate('/login');
+  };
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -139,15 +145,15 @@ export default function Verify2FAPage() {
         {success && (
           <div
             style={{
-              background: 'var(--status-success-bg, #f0fdf4)',
-              color: 'var(--status-success, #16a34a)',
+              background: 'var(--status-success-bg)',
+              color: 'var(--status-success)',
               padding: '14px 20px',
               borderRadius: 9999,
               fontSize: '0.85rem',
               fontWeight: 600,
               marginBottom: 20,
               textAlign: 'center',
-              border: '1px solid var(--status-success, #16a34a)',
+              border: '1px solid var(--status-success)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -179,36 +185,25 @@ export default function Verify2FAPage() {
         {/* Step 1: Open Auth Pivota */}
         <div
           style={{
-            background: '#f8f9fa',
+            background: 'var(--bg-elevated)',
             borderRadius: 8,
             padding: '16px 20px',
             marginBottom: 24,
-            border: '1px solid #e0e0e0',
+            border: '1px solid var(--border-default)',
           }}
         >
-          <p style={{ fontSize: '0.82rem', color: '#333', marginBottom: 8, fontWeight: 600 }}>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: 8, fontWeight: 600 }}>
             Step 1: Get your authentication code
           </p>
-          <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: 12, lineHeight: 1.5 }}>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.5 }}>
             Open Auth Pivota, sign in with your credentials, verify your email, then copy the 6-digit code shown on screen.
           </p>
           <a
             href="http://localhost:3001"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              background: '#000000',
-              color: '#ffffff',
-              borderRadius: 9999,
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              textDecoration: 'none',
-              transition: 'opacity 0.2s',
-            }}
+            className="btn-primary"
+            style={{ padding: '8px 16px', fontSize: '0.8rem' }}
             id="pivota-auth-link"
           >
             <Shield size={14} /> Open Auth Pivota <ExternalLink size={12} />
@@ -216,7 +211,7 @@ export default function Verify2FAPage() {
         </div>
 
         {/* Step 2: Enter Code */}
-        <p style={{ fontSize: '0.82rem', color: '#333', marginBottom: 12, fontWeight: 600 }}>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: 12, fontWeight: 600 }}>
           Step 2: Enter the 6-digit code
         </p>
 
@@ -237,24 +232,24 @@ export default function Verify2FAPage() {
               id={`pivota-2fa-digit-${index}`}
               style={{
                 width: 52,
-                height: 62,
+                height: 56,
                 textAlign: 'center',
                 fontSize: '1.4rem',
                 fontWeight: 700,
-                fontFamily: "'Courier New', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 background: '#ffffff',
-                border: `2px solid ${digit ? '#000000' : '#d0d0d0'}`,
-                borderRadius: 8,
-                color: '#000000',
+                border: `1px solid ${digit ? 'var(--border-default)' : 'var(--text-disabled)'}`,
+                borderRadius: 9999,
+                color: 'var(--text-primary)',
                 outline: 'none',
-                transition: 'all 0.2s ease',
+                transition: 'all var(--transition-fast)',
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#000000';
-                e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.08)';
+                e.target.style.borderColor = 'var(--border-default)';
+                e.target.style.boxShadow = '0 0 0 2px rgba(0, 0, 0, 0.05)';
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = digit ? '#000000' : '#d0d0d0';
+                e.target.style.borderColor = digit ? 'var(--border-default)' : 'var(--text-disabled)';
                 e.target.style.boxShadow = 'none';
               }}
             />
@@ -287,9 +282,13 @@ export default function Verify2FAPage() {
 
         {/* Back to Login */}
         <p style={{ textAlign: 'center', marginTop: 22, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-          <Link to="/login" style={{ color: '#000000', textDecoration: 'none', fontWeight: 500 }}>
+          <a
+            href="/login"
+            onClick={handleBackToSignIn}
+            style={{ color: '#000000', textDecoration: 'none', fontWeight: 500, cursor: 'pointer' }}
+          >
             ← Back to Sign In
-          </Link>
+          </a>
         </p>
       </div>
     </div>

@@ -120,11 +120,23 @@ def send_otp_email(to_email: str, otp_code: str) -> bool:
     msg.attach(MIMEText(html_body, "html"))
 
     try:
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+        # Try port 587 (TLS) first with a timeout
+        print(f"Attempting to send email via TLS to {to_email} on port {settings.SMTP_PORT}...")
+        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
             server.starttls()
             server.login(settings.SMTP_EMAIL, settings.SMTP_APP_PASSWORD)
             server.sendmail(settings.SMTP_EMAIL, to_email, msg.as_string())
+        print(f"OTP successfully sent via TLS to {to_email}")
         return True
     except Exception as e:
-        print(f"Failed to send OTP email: {e}")
-        raise
+        print(f"Failed to send via TLS on port {settings.SMTP_PORT}: {e}. Trying SSL on port 465...")
+        try:
+            # Fallback to port 465 (SSL) with a timeout
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
+                server.login(settings.SMTP_EMAIL, settings.SMTP_APP_PASSWORD)
+                server.sendmail(settings.SMTP_EMAIL, to_email, msg.as_string())
+            print(f"OTP successfully sent via SSL to {to_email}")
+            return True
+        except Exception as ssl_e:
+            print(f"Failed to send via SSL on port 465: {ssl_e}")
+            raise ssl_e

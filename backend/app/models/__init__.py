@@ -20,6 +20,7 @@ from app.models.metadata import (
     IndexMetadata,
     RelationshipMetadata,
 )
+from app.models.conversation import Conversation, ConversationMessage
 
 __all__ = [
     "Organization",
@@ -36,4 +37,7 @@ __all__ = [
     "ColumnMetadata",
     "IndexMetadata",
     "RelationshipMetadata",
+    "Conversation",
+    "ConversationMessage",
 ]
+

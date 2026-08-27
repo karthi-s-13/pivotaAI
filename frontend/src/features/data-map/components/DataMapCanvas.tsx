@@ -41,7 +41,7 @@ function CanvasBackground() {
   return (
     <defs>
       <pattern id="dot-grid" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
-        <circle cx="1" cy="1" r="0.8" fill="rgba(99,102,241,0.08)" />
+        <circle cx="1" cy="1" r="0.8" fill="rgba(0,0,0,0.08)" />
       </pattern>
     </defs>
   );
@@ -51,7 +51,7 @@ export default function DataMapCanvas({
   nodes,
   edges,
   selectedNodeId,
-  highlightedNodeId,
+  highlightedNodeId: _highlightedNodeId,
   viewport,
   onViewportChange,
   onNodeClick,
@@ -65,7 +65,7 @@ export default function DataMapCanvas({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; node: DataMapNode } | null>(null);
+  const [, setTooltip] = useState<{ x: number; y: number; node: DataMapNode } | null>(null);
 
   // Report dimensions to parent
   useEffect(() => {
@@ -172,9 +172,9 @@ export default function DataMapCanvas({
       style={{
         position: 'relative',
         flex: 1,
-        background: '#080d18',
-        borderRadius: 16,
-        border: '1px solid rgba(148,163,184,0.08)',
+        background: 'var(--bg-elevated)',
+        borderRadius: 12,
+        border: '1px solid var(--glass-border)',
         overflow: 'hidden',
       }}
     >
@@ -197,31 +197,7 @@ export default function DataMapCanvas({
         {/* Dot grid background */}
         <rect width="100%" height="100%" fill="url(#dot-grid)" />
 
-        {/* Constellation nebula glow at center */}
-        <defs>
-          <radialGradient id="nebulaGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(99,102,241,0.04)" />
-            <stop offset="60%" stopColor="rgba(139,92,246,0.02)" />
-            <stop offset="100%" stopColor="rgba(6,182,212,0)" />
-          </radialGradient>
-          <radialGradient id="rootGradient2" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#818cf8" />
-            <stop offset="50%" stopColor="#6366f1" />
-            <stop offset="100%" stopColor="#4338ca" />
-          </radialGradient>
-        </defs>
-
         <g transform={`translate(${viewport.panX}, ${viewport.panY}) scale(${viewport.zoom})`}>
-          {/* Nebula background glow */}
-          <ellipse
-            cx={900}
-            cy={600}
-            rx={450}
-            ry={320}
-            fill="url(#nebulaGlow)"
-            style={{ pointerEvents: 'none' }}
-          />
-
           {/* ── Layer 1: Relationship edges (draw first, below everything) ── */}
           {relationshipEdges.map((edge) => {
             const src = nodes[edge.source];
@@ -395,7 +371,7 @@ export default function DataMapCanvas({
         <text
           x={10}
           y={20}
-          fill="rgba(148,163,184,0.3)"
+          fill="rgba(0,0,0,0.3)"
           fontSize="10"
           fontFamily="JetBrains Mono, monospace"
           style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -418,8 +394,8 @@ export default function DataMapCanvas({
         <span
           style={{
             fontSize: '0.65rem',
-            color: 'rgba(148,163,184,0.35)',
-            fontFamily: 'JetBrains Mono, monospace',
+            color: 'var(--text-disabled)',
+            fontFamily: "'JetBrains Mono', monospace",
           }}
         >
           {visibleNodes.length} nodes · {edges.length} edges

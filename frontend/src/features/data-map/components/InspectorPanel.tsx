@@ -13,14 +13,13 @@ import {
   RefreshCw,
   ExternalLink,
   X,
-  Key,
   Link2,
   ChevronRight,
   Layers,
   BarChart3,
 } from 'lucide-react';
-import type { DataMapNode, ProviderMetadata, TableMetadata } from '../types/dataMap.types';
-import { getProviderColor, getProviderLabel } from '../types/dataMap.types';
+import type { DataMapNode, ProviderMetadata } from '../types/dataMap.types';
+import { getProviderLabel } from '../types/dataMap.types';
 
 interface InspectorPanelProps {
   node: DataMapNode | null;
@@ -41,7 +40,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
           color: 'var(--text-muted)',
           marginBottom: 10,
           paddingBottom: 6,
-          borderBottom: '1px solid rgba(148,163,184,0.06)',
+          borderBottom: '1px solid var(--bg-elevated)',
         }}
       >
         {title}
@@ -60,7 +59,7 @@ function Row({ label, value, mono }: { label: string; value: React.ReactNode; mo
         alignItems: 'flex-start',
         gap: 8,
         padding: '5px 0',
-        borderBottom: '1px solid rgba(148,163,184,0.04)',
+        borderBottom: '1px solid var(--bg-elevated)',
       }}
     >
       <span style={{ fontSize: '0.73rem', color: 'var(--text-muted)', flexShrink: 0 }}>{label}</span>
@@ -68,7 +67,7 @@ function Row({ label, value, mono }: { label: string; value: React.ReactNode; mo
         style={{
           fontSize: '0.73rem',
           color: 'var(--text-primary)',
-          fontFamily: mono ? 'JetBrains Mono, monospace' : 'inherit',
+          fontFamily: mono ? "'JetBrains Mono', monospace" : 'inherit',
           textAlign: 'right',
           wordBreak: 'break-all',
         }}
@@ -79,30 +78,32 @@ function Row({ label, value, mono }: { label: string; value: React.ReactNode; mo
   );
 }
 
+/** Shared status token mapping, consistent with the app's StatusIndicator. */
+const STATUS_MAP: Record<string, { color: string; bg: string; label: string }> = {
+  connected: { color: 'var(--status-success)', bg: 'var(--status-success-bg)', label: 'Connected' },
+  healthy: { color: 'var(--status-success)', bg: 'var(--status-success-bg)', label: 'Connected' },
+  ready: { color: 'var(--status-success)', bg: 'var(--status-success-bg)', label: 'Ready' },
+  disconnected: { color: 'var(--text-disabled)', bg: 'var(--bg-elevated)', label: 'Disconnected' },
+  idle: { color: 'var(--text-disabled)', bg: 'var(--bg-elevated)', label: 'Not Verified' },
+  unknown: { color: 'var(--text-disabled)', bg: 'var(--bg-elevated)', label: 'Not Verified' },
+  error: { color: 'var(--status-error)', bg: 'var(--status-error-bg)', label: 'Error' },
+  auth_failed: { color: 'var(--status-error)', bg: 'var(--status-error-bg)', label: 'Auth Failed' },
+  network_error: { color: 'var(--status-error)', bg: 'var(--status-error-bg)', label: 'Network Error' },
+  permission_denied: { color: 'var(--status-error)', bg: 'var(--status-error-bg)', label: 'Permission Denied' },
+  syncing: { color: 'var(--status-info)', bg: 'var(--status-info-bg)', label: 'Syncing' },
+  testing: { color: 'var(--status-info)', bg: 'var(--status-info-bg)', label: 'Testing…' },
+};
+
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { color: string; bg: string; label: string }> = {
-    connected: { color: '#10b981', bg: 'rgba(16,185,129,0.12)', label: 'Connected' },
-    healthy: { color: '#10b981', bg: 'rgba(16,185,129,0.12)', label: 'Connected' },
-    disconnected: { color: '#64748b', bg: 'rgba(100,116,139,0.12)', label: 'Disconnected' },
-    idle: { color: '#64748b', bg: 'rgba(100,116,139,0.1)', label: 'Not Verified' },
-    unknown: { color: '#64748b', bg: 'rgba(100,116,139,0.1)', label: 'Not Verified' },
-    error: { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', label: 'Error' },
-    auth_failed: { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', label: 'Auth Failed' },
-    network_error: { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', label: 'Network Error' },
-    permission_denied: { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', label: 'Permission Denied' },
-    syncing: { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', label: 'Syncing' },
-    testing: { color: '#6366f1', bg: 'rgba(99,102,241,0.12)', label: 'Testing…' },
-    ready: { color: '#10b981', bg: 'rgba(16,185,129,0.12)', label: 'Ready' },
-  };
-  const style = map[status.toLowerCase()] ?? map.disconnected;
+  const style = STATUS_MAP[status.toLowerCase()] ?? STATUS_MAP.disconnected;
   return (
     <span
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         gap: 4,
-        padding: '2px 8px',
-        borderRadius: 20,
+        padding: '2px 10px',
+        borderRadius: 9999,
         background: style.bg,
         color: style.color,
         fontSize: '0.68rem',
@@ -116,7 +117,6 @@ function StatusBadge({ status }: { status: string }) {
           borderRadius: '50%',
           background: style.color,
           display: 'inline-block',
-          boxShadow: `0 0 5px ${style.color}`,
         }}
       />
       {style.label}
@@ -124,16 +124,16 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }: InspectorPanelProps) {
+export default function InspectorPanel({ node, onClose, onRefresh, onNavigate: _onNavigate }: InspectorPanelProps) {
   const navigate = useNavigate();
 
   if (!node) {
     return (
       <div
         style={{
-          background: 'var(--bg-elevated)',
-          border: '1px solid var(--border-default)',
-          borderRadius: 16,
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--glass-border)',
+          borderRadius: 12,
           padding: 24,
           display: 'flex',
           flexDirection: 'column',
@@ -150,13 +150,13 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: 'rgba(99,102,241,0.08)',
+            background: 'var(--bg-elevated)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Info size={22} style={{ color: 'var(--brand-primary)' }} />
+          <Info size={22} style={{ color: 'var(--text-primary)' }} />
         </div>
         <div>
           <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
@@ -185,7 +185,6 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
 
     if (node.type === 'provider') {
       const meta = node.metadata as ProviderMetadata;
-      const color = getProviderColor(meta.provider_type);
       return (
         <>
           <Section title="Connection">
@@ -215,20 +214,12 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
 
           <button
             onClick={() => onRefresh(node.id)}
+            className="btn-ghost"
             style={{
               width: '100%',
-              display: 'flex',
-              alignItems: 'center',
               justifyContent: 'center',
-              gap: 8,
-              padding: '9px 0',
-              background: `${color}18`,
-              border: `1px solid ${color}40`,
-              borderRadius: 10,
-              color: color,
               fontSize: '0.78rem',
-              fontWeight: 600,
-              cursor: 'pointer',
+              padding: '9px 0',
               marginTop: 4,
             }}
           >
@@ -265,17 +256,11 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
       const inbound = meta.relationships_inbound ?? [];
       const indexes = meta.indexes ?? [];
 
-      const typeColor = meta.type === 'VIEW'
-        ? '#8b5cf6'
-        : meta.type === 'COLLECTION'
-        ? '#10b981'
-        : '#6366f1';
-
       return (
         <>
           <Section title="Table Information">
             <Row label="Type" value={
-              <span style={{ color: typeColor, fontWeight: 700, fontSize: '0.7rem' }}>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.7rem' }}>
                 {meta.type}
               </span>
             } />
@@ -310,22 +295,24 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       padding: '4px 8px',
-                      background: 'rgba(255,255,255,0.02)',
+                      background: 'var(--bg-elevated)',
                       borderRadius: 6,
                       gap: 8,
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      {col.is_primary_key && <Key size={9} style={{ color: '#f59e0b', flexShrink: 0 }} />}
+                      {col.is_primary_key && (
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text-primary)', flexShrink: 0, display: 'inline-block' }} />
+                      )}
                       {col.is_foreign_key && !col.is_primary_key && (
-                        <Link2 size={9} style={{ color: '#10b981', flexShrink: 0 }} />
+                        <Link2 size={9} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
                       )}
                       <span
                         style={{
                           fontSize: '0.72rem',
                           fontWeight: col.is_primary_key ? 700 : 400,
-                          color: col.is_primary_key ? '#fcd34d' : 'var(--text-primary)',
-                          fontFamily: 'JetBrains Mono, monospace',
+                          color: 'var(--text-primary)',
+                          fontFamily: "'JetBrains Mono', monospace",
                         }}
                       >
                         {col.name}
@@ -334,9 +321,8 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
                     <span
                       style={{
                         fontSize: '0.65rem',
-                        color: typeColor,
-                        fontFamily: 'JetBrains Mono, monospace',
-                        opacity: 0.7,
+                        color: 'var(--text-muted)',
+                        fontFamily: "'JetBrains Mono', monospace",
                         flexShrink: 0,
                       }}
                     >
@@ -352,18 +338,18 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
             <Section title="Relationships">
               {outbound.map((rel: any) => (
                 <div key={rel.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', fontSize: '0.72rem' }}>
-                  <ChevronRight size={10} style={{ color: 'var(--brand-primary)', flexShrink: 0 }} />
+                  <ChevronRight size={10} style={{ color: 'var(--text-primary)', flexShrink: 0 }} />
                   <span style={{ color: 'var(--text-muted)' }}>References</span>
-                  <span style={{ color: 'var(--brand-primary-light)', fontFamily: 'monospace' }}>
+                  <span style={{ color: 'var(--text-primary)', fontFamily: 'monospace' }}>
                     {rel.to_table_name}
                   </span>
                 </div>
               ))}
               {inbound.map((rel: any) => (
                 <div key={rel.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', fontSize: '0.72rem' }}>
-                  <ChevronRight size={10} style={{ color: '#10b981', flexShrink: 0, transform: 'rotate(180deg)' }} />
+                  <ChevronRight size={10} style={{ color: 'var(--text-muted)', flexShrink: 0, transform: 'rotate(180deg)' }} />
                   <span style={{ color: 'var(--text-muted)' }}>Referenced by</span>
-                  <span style={{ color: '#6ee7b7', fontFamily: 'monospace' }}>
+                  <span style={{ color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
                     {rel.from_table_name}
                   </span>
                 </div>
@@ -377,7 +363,7 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
                 <div key={idx.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', fontSize: '0.7rem' }}>
                   <span style={{ color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{idx.name}</span>
                   {idx.unique && (
-                    <span style={{ color: '#a78bfa', fontSize: '0.62rem', fontWeight: 700 }}>UNIQUE</span>
+                    <span style={{ color: 'var(--text-primary)', fontSize: '0.62rem', fontWeight: 700 }}>UNIQUE</span>
                   )}
                 </div>
               ))}
@@ -404,20 +390,20 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
   };
 
   const nodeTypeIcon = {
-    root: <Network size={16} style={{ color: 'var(--brand-primary)' }} />,
-    provider: <Database size={16} style={{ color: '#6366f1' }} />,
-    database: <Database size={16} style={{ color: '#6366f1' }} />,
-    schema: <Layers size={16} style={{ color: '#8b5cf6' }} />,
-    table: <Table2 size={16} style={{ color: '#6366f1' }} />,
-    column: <BarChart3 size={16} style={{ color: '#6366f1' }} />,
+    root: <Network size={16} style={{ color: 'var(--text-primary)' }} />,
+    provider: <Database size={16} style={{ color: 'var(--text-primary)' }} />,
+    database: <Database size={16} style={{ color: 'var(--text-primary)' }} />,
+    schema: <Layers size={16} style={{ color: 'var(--text-primary)' }} />,
+    table: <Table2 size={16} style={{ color: 'var(--text-primary)' }} />,
+    column: <BarChart3 size={16} style={{ color: 'var(--text-primary)' }} />,
   }[node.type];
 
   return (
     <div
       style={{
-        background: 'var(--bg-elevated)',
-        border: '1px solid var(--border-default)',
-        borderRadius: 16,
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--glass-border)',
+        borderRadius: 12,
         padding: 20,
         display: 'flex',
         flexDirection: 'column',
@@ -444,7 +430,7 @@ export default function InspectorPanel({ node, onClose, onRefresh, onNavigate }:
               width: 36,
               height: 36,
               borderRadius: 10,
-              background: 'rgba(99,102,241,0.1)',
+              background: 'var(--bg-elevated)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

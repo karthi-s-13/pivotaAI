@@ -282,6 +282,11 @@ code, .mono {
   to { transform: rotate(360deg); }
 }
 
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -292,6 +297,33 @@ code, .mono {
 
 .animate-spin-slow {
   animation: spin 2.5s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   ROW / CARD HOVER UTILITIES
+   ═══════════════════════════════════════════════ */
+
+.hover-row {
+  transition: background var(--transition-fast);
+}
+.hover-row:hover {
+  background: var(--bg-elevated);
+}
+
+.hover-card {
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.hover-card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-elevated);
+}
+
+.arrow-hover {
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+.hover-card:hover .arrow-hover {
+  transform: translateX(3px);
+  color: var(--text-primary);
 }
 
 /* Disable background elements */
@@ -308,3 +340,35 @@ code, .mono {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══════════════════════════════════════════════
+   GEMINI THEME CORE ANIMATIONS
+   ═══════════════════════════════════════════════ */
+
+@keyframes gemini-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(155, 81, 224, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 32px rgba(224, 81, 168, 0.65);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+

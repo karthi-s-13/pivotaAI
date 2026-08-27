@@ -126,15 +126,15 @@ export default function IAMChangePasswordPage() {
         {success && (
           <div
             style={{
-              background: 'var(--status-success-bg, #f0fdf4)',
-              color: 'var(--status-success, #16a34a)',
+              background: 'var(--status-success-bg)',
+              color: 'var(--status-success)',
               padding: '12px 20px',
               borderRadius: 9999,
               fontSize: '0.85rem',
               fontWeight: 600,
               marginBottom: 20,
               textAlign: 'center',
-              border: '1px solid var(--status-success, #16a34a)',
+              border: '1px solid var(--status-success)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -171,8 +171,8 @@ export default function IAMChangePasswordPage() {
               style={{
                 display: 'block',
                 fontSize: '0.8rem',
-                fontWeight: 600,
-                color: '#333333',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
                 marginBottom: 6,
               }}
             >
@@ -185,14 +185,7 @@ export default function IAMChangePasswordPage() {
               placeholder="Enter the temp password"
               required
               id="iam-change-temp-pass"
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '1px solid #d0d0d0',
-                borderRadius: 8,
-                fontSize: '0.88rem',
-                outline: 'none',
-              }}
+              className="input-field"
             />
           </div>
 
@@ -202,8 +195,8 @@ export default function IAMChangePasswordPage() {
               style={{
                 display: 'block',
                 fontSize: '0.8rem',
-                fontWeight: 600,
-                color: '#333333',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
                 marginBottom: 6,
               }}
             >
@@ -217,15 +210,8 @@ export default function IAMChangePasswordPage() {
                 placeholder="Choose a strong password"
                 required
                 id="iam-change-new-pass"
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  paddingRight: 44,
-                  border: '1px solid #d0d0d0',
-                  borderRadius: 8,
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                }}
+                className="input-field"
+                style={{ paddingRight: 44 }}
               />
               <button
                 type="button"
@@ -237,7 +223,7 @@ export default function IAMChangePasswordPage() {
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
-                  color: '#888888',
+                  color: 'var(--text-muted)',
                   cursor: 'pointer',
                   padding: 4,
                 }}
@@ -253,8 +239,8 @@ export default function IAMChangePasswordPage() {
               style={{
                 display: 'block',
                 fontSize: '0.8rem',
-                fontWeight: 600,
-                color: '#333333',
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
                 marginBottom: 6,
               }}
             >
@@ -267,14 +253,7 @@ export default function IAMChangePasswordPage() {
               placeholder="Verify your new password"
               required
               id="iam-change-confirm-pass"
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '1px solid #d0d0d0',
-                borderRadius: 8,
-                fontSize: '0.88rem',
-                outline: 'none',
-              }}
+              className="input-field"
             />
           </div>
 

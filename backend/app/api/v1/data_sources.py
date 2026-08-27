@@ -38,6 +38,7 @@ def list_data_sources(
 @router.post("", response_model=DataSourceResponse, status_code=201)
 def create_data_source(
     request: DataSourceCreate,
+    background_tasks: BackgroundTasks,
     user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -55,6 +56,15 @@ def create_data_source(
         resource_id=result.identity.id,
         details={"name": result.identity.name, "provider": result.identity.provider},
     )
+
+    # Automatically trigger metadata extraction and pgvector indexing
+    if result.health.status in ("healthy", "connected"):
+        background_tasks.add_task(
+            data_source_service.sync_data_source_background,
+            result.identity.id,
+            user.organization_id,
+            user.id
+        )
 
     return result
 
@@ -194,6 +204,7 @@ def discover_metadata(
 @router.post("/{source_id}/connect", response_model=DataSourceResponse)
 def connect_datasource(
     source_id: str,
+    background_tasks: BackgroundTasks,
     user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -210,6 +221,15 @@ def connect_datasource(
         resource_type="data_source",
         resource_id=source_id,
     )
+
+    # Automatically trigger metadata extraction and pgvector indexing
+    if result.health.status in ("healthy", "connected"):
+        background_tasks.add_task(
+            data_source_service.sync_data_source_background,
+            source_id,
+            user.organization_id,
+            user.id
+        )
 
     return result
 
